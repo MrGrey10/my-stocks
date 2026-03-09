@@ -1,0 +1,55 @@
+name: Deploy Client
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'client/**'
+      - '.github/workflows/deploy-client.yml'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: latest
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+          cache-dependency-path: client/auth/pnpm-lock.yaml
+
+      - name: Install dependencies
+        working-directory: client/auth
+        run: pnpm install --frozen-lockfile
+
+      - name: Build static site
+        working-directory: client/auth
+        env:
+          NUXT_PUBLIC_API_BASE: http://${{ secrets.EC2_PUBLIC_DNS }}/api
+        run: pnpm run generate
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Sync to S3
+        run: |
+          aws s3 sync client/auth/.output/public s3://${{ secrets.AWS_S3_BUCKET }} --delete
+
+      - name: Invalidate CloudFront cache
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id ${{ secrets.AWS_CLOUDFRONT_ID }} \
+            --paths "/*"

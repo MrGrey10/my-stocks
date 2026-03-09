@@ -1,0 +1,22 @@
+# Dependencies
+node_modules
+
+# Turborepo
+.turbo
+
+# Build outputs
+dist
+.next
+.output
+.nuxt
+
+# Environment variables (secrets)
+.env
+.env.*
+!.env.example
+
+# Test coverage
+coverage
+
+# OS artifacts
+.DS_Store
