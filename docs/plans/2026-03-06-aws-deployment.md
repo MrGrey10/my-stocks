@@ -22,23 +22,26 @@
 ### Task 1: Create EC2 Key Pair and Launch Instance
 
 **Files:**
+
 - No code files — AWS Console + CLI steps
 
 **Step 1: Create SSH key pair**
 
 In AWS Console → EC2 → Key Pairs → Create key pair:
-- Name: `fullstack-auth-key`
+
+- Name: `mystocks`
 - Type: RSA
 - Format: `.pem`
-- Download and save to `~/.ssh/fullstack-auth-key.pem`
+- Download and save to `~/.ssh/mystocks.pem`
 
 ```bash
-chmod 400 ~/.ssh/fullstack-auth-key.pem
+chmod 400 ~/.ssh/mystocks.pem
 ```
 
 **Step 2: Create Security Group**
 
 AWS Console → EC2 → Security Groups → Create:
+
 - Name: `fullstack-auth-sg`
 - Inbound rules:
   - SSH (22) — My IP
@@ -48,10 +51,11 @@ AWS Console → EC2 → Security Groups → Create:
 **Step 3: Launch EC2 instance**
 
 AWS Console → EC2 → Launch Instance:
+
 - Name: `fullstack-auth-server`
-- AMI: Amazon Linux 2023
+- AMI: Ubuntu Server 24.04 LTS
 - Instance type: `t3.small`
-- Key pair: `fullstack-auth-key`
+- Key pair: `mystocks`
 - Security group: `fullstack-auth-sg`
 - Storage: 20 GiB gp3
 
@@ -63,7 +67,8 @@ Format: `ec2-XX-XX-XX-XX.compute-1.amazonaws.com`
 **Step 5: Verify SSH access**
 
 ```bash
-ssh -i ~/.ssh/fullstack-auth-key.pem ec2-user@<EC2_PUBLIC_DNS>
+ssh -i ~/.ssh/mystocks.pem ubuntu@<EC2_PUBLIC_DNS>
+ssh -i ~/.ssh/mystocks.pem ubuntu@ec2-44-192-67-232.compute-1.amazonaws.com
 ```
 
 Expected: You are connected to the EC2 instance shell.
@@ -75,46 +80,53 @@ Expected: You are connected to the EC2 instance shell.
 ### Task 2: Install Docker and Clone Repo on EC2
 
 **Files:**
+
 - No code files — EC2 shell commands
 
 **Step 1: SSH into EC2**
 
 ```bash
-ssh -i ~/.ssh/fullstack-auth-key.pem ec2-user@<EC2_PUBLIC_DNS>
+ssh -i ~/.ssh/mystocks.pem ubuntu@<EC2_PUBLIC_DNS>
+ssh -i ~/.ssh/mystocks.pem ubuntu@ec2-44-192-67-232.compute-1.amazonaws.com
 ```
 
 **Step 2: Install Docker**
 
 ```bash
-sudo dnf update -y
-sudo dnf install -y docker
+sudo apt update && sudo apt upgrade -y
+sudo apt install -y ca-certificates curl gnupg
+sudo install -m 0755 -d /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+sudo chmod a+r /etc/apt/keyrings/docker.gpg
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+sudo apt update
+sudo apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 sudo systemctl start docker
 sudo systemctl enable docker
-sudo usermod -aG docker ec2-user
+sudo usermod -aG docker ubuntu
 ```
 
 Log out and back in for group change to take effect:
+
 ```bash
 exit
-ssh -i ~/.ssh/fullstack-auth-key.pem ec2-user@<EC2_PUBLIC_DNS>
+ssh -i ~/.ssh/mystocks.pem ubuntu@<EC2_PUBLIC_DNS>
+ssh -i ~/.ssh/mystocks.pem ubuntu@ec2-44-192-67-232.compute-1.amazonaws.com
 ```
 
-**Step 3: Install Docker Compose plugin**
+**Step 3: Verify Docker and Docker Compose**
 
 ```bash
-sudo mkdir -p /usr/local/lib/docker/cli-plugins
-sudo curl -SL https://github.com/docker/compose/releases/latest/download/docker-compose-linux-x86_64 \
-  -o /usr/local/lib/docker/cli-plugins/docker-compose
-sudo chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
+docker --version
 docker compose version
 ```
 
-Expected: `Docker Compose version v2.x.x`
+Expected: Both commands print version numbers (Docker Compose plugin is included with Docker CE).
 
 **Step 4: Install Git and pnpm**
 
 ```bash
-sudo dnf install -y git
+sudo apt install -y git
 curl -fsSL https://get.pnpm.io/install.sh | sh -
 source ~/.bashrc
 pnpm --version
@@ -124,10 +136,10 @@ pnpm --version
 
 ```bash
 sudo mkdir -p /app
-sudo chown ec2-user:ec2-user /app
+sudo chown ubuntu:ubuntu /app
 cd /app
-git clone https://github.com/<YOUR_USERNAME>/<YOUR_REPO>.git fullstack-auth
-cd fullstack-auth
+git clone https://github.com/<YOUR_USERNAME>/<YOUR_REPO>.git mystocks
+cd mystocks
 ```
 
 **Step 6: Verify directory structure**
@@ -143,6 +155,7 @@ Expected: `server/  client/  docs/` (and other repo files)
 ### Task 3: Create Production Docker Compose File
 
 **Files:**
+
 - Create: `server/docker-compose.prod.yml`
 - Create: `server/nginx/nginx.conf`
 
@@ -262,6 +275,7 @@ git commit -m "feat: add production docker compose and nginx config"
 ### Task 4: Create Server Dockerfile
 
 **Files:**
+
 - Create: `server/Dockerfile`
 
 **Step 1: Create Dockerfile**
@@ -317,18 +331,20 @@ git commit -m "feat: add server Dockerfile"
 ### Task 5: Create .env File on EC2
 
 **Files:**
+
 - No code files — EC2 shell only (never commit .env)
 
 **Step 1: SSH into EC2**
 
 ```bash
-ssh -i ~/.ssh/fullstack-auth-key.pem ec2-user@<EC2_PUBLIC_DNS>
+ssh -i ~/.ssh/mystocks.pem ubuntu@<EC2_PUBLIC_DNS>
+ssh -i ~/.ssh/mystocks.pem ubuntu@ec2-44-192-67-232.compute-1.amazonaws.com
 ```
 
 **Step 2: Create .env in server directory**
 
 ```bash
-cd /app/fullstack-auth/server
+cd /app/mystocks/server
 nano .env
 ```
 
@@ -366,7 +382,7 @@ docker compose -f docker-compose.prod.yml up -d --build
 **Step 4: Run Prisma migrations**
 
 ```bash
-docker exec nestjs npx prisma migrate deploy
+docker exec server-nestjs-1 npx prisma migrate deploy
 ```
 
 **Step 5: Verify containers are running**
@@ -390,11 +406,13 @@ Expected: `ok`
 ### Task 6: Create S3 Bucket and CloudFront Distribution
 
 **Files:**
+
 - No code files — AWS Console steps
 
 **Step 1: Create S3 bucket**
 
 AWS Console → S3 → Create bucket:
+
 - Name: `fullstack-auth-client` (must be globally unique, add suffix if needed)
 - Region: same as EC2 (e.g. `us-east-1`)
 - Block all public access: ON (CloudFront uses OAC)
@@ -402,6 +420,7 @@ AWS Console → S3 → Create bucket:
 **Step 2: Create CloudFront Origin Access Control**
 
 AWS Console → CloudFront → Origin Access → Create OAC:
+
 - Name: `fullstack-auth-oac`
 - Origin type: S3
 - Signing behavior: Sign requests
@@ -409,6 +428,7 @@ AWS Console → CloudFront → Origin Access → Create OAC:
 **Step 3: Create CloudFront distribution**
 
 AWS Console → CloudFront → Create distribution:
+
 - Origin domain: select your S3 bucket
 - Origin access: Origin Access Control → select `fullstack-auth-oac`
 - Copy the S3 bucket policy when prompted and apply it to the bucket
@@ -426,13 +446,14 @@ After creation (takes ~5 min), copy the Distribution domain name:
 **Step 5: Update .env on EC2**
 
 ```bash
-ssh -i ~/.ssh/fullstack-auth-key.pem ec2-user@<EC2_PUBLIC_DNS>
+ssh -i ~/.ssh/mystocks.pem ubuntu@<EC2_PUBLIC_DNS>
 cd /app/fullstack-auth/server
 nano .env
 # Update ALLOWED_ORIGINS=https://dXXXXXXXXXXXX.cloudfront.net
 ```
 
 Restart NestJS:
+
 ```bash
 docker compose -f docker-compose.prod.yml restart nestjs
 ```
@@ -442,6 +463,7 @@ docker compose -f docker-compose.prod.yml restart nestjs
 ### Task 7: Create IAM User for GitHub Actions
 
 **Files:**
+
 - No code files — AWS Console + CLI steps
 
 **Step 1: Create IAM policy**
@@ -454,15 +476,8 @@ AWS Console → IAM → Policies → Create policy → JSON:
   "Statement": [
     {
       "Effect": "Allow",
-      "Action": [
-        "s3:PutObject",
-        "s3:DeleteObject",
-        "s3:ListBucket"
-      ],
-      "Resource": [
-        "arn:aws:s3:::fullstack-auth-client",
-        "arn:aws:s3:::fullstack-auth-client/*"
-      ]
+      "Action": ["s3:PutObject", "s3:DeleteObject", "s3:ListBucket"],
+      "Resource": ["arn:aws:s3:::fullstack-auth-client", "arn:aws:s3:::fullstack-auth-client/*"]
     },
     {
       "Effect": "Allow",
@@ -478,12 +493,14 @@ AWS Console → IAM → Policies → Create policy → JSON:
 **Step 2: Create IAM user**
 
 AWS Console → IAM → Users → Create user:
+
 - Username: `fullstack-auth-github-actions`
 - Attach policy: `fullstack-auth-github-actions`
 
 **Step 3: Create access key**
 
 IAM → Users → `fullstack-auth-github-actions` → Security credentials → Create access key:
+
 - Use case: Application running outside AWS
 - Save `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`
 
@@ -492,6 +509,7 @@ IAM → Users → `fullstack-auth-github-actions` → Security credentials → C
 ### Task 8: Add GitHub Actions Secrets
 
 **Files:**
+
 - No code files — GitHub repository settings
 
 **Step 1: Navigate to repo secrets**
@@ -502,23 +520,24 @@ GitHub → Repository → Settings → Secrets and variables → Actions → New
 
 Add each of these:
 
-| Name | Value |
-|------|-------|
-| `EC2_HOST` | `ec2-XX-XX-XX-XX.compute-1.amazonaws.com` |
-| `EC2_SSH_KEY` | Contents of `~/.ssh/fullstack-auth-key.pem` (full file content) |
-| `EC2_USER` | `ec2-user` |
-| `AWS_ACCESS_KEY_ID` | From Task 7 |
-| `AWS_SECRET_ACCESS_KEY` | From Task 7 |
-| `AWS_S3_BUCKET` | `fullstack-auth-client` |
-| `AWS_CLOUDFRONT_ID` | CloudFront distribution ID (from Task 6) |
-| `AWS_REGION` | `us-east-1` (or your region) |
-| `EC2_PUBLIC_DNS` | EC2 public DNS (also used as API base) |
+| Name                    | Value                                                 |
+| ----------------------- | ----------------------------------------------------- |
+| `EC2_HOST`              | `ec2-XX-XX-XX-XX.compute-1.amazonaws.com`             |
+| `EC2_SSH_KEY`           | Contents of `~/.ssh/mystocks.pem` (full file content) |
+| `EC2_USER`              | `ubuntu`                                              |
+| `AWS_ACCESS_KEY_ID`     | From Task 7                                           |
+| `AWS_SECRET_ACCESS_KEY` | From Task 7                                           |
+| `AWS_S3_BUCKET`         | `fullstack-auth-client`                               |
+| `AWS_CLOUDFRONT_ID`     | CloudFront distribution ID (from Task 6)              |
+| `AWS_REGION`            | `us-east-1` (or your region)                          |
+| `EC2_PUBLIC_DNS`        | EC2 public DNS (also used as API base)                |
 
 ---
 
 ### Task 9: Create GitHub Actions Workflow — Server Deploy
 
 **Files:**
+
 - Create: `.github/workflows/deploy-server.yml`
 
 **Step 1: Create the workflow file**
@@ -568,6 +587,7 @@ git commit -m "feat: add server deploy GitHub Actions workflow"
 ### Task 10: Create GitHub Actions Workflow — Client Deploy
 
 **Files:**
+
 - Create: `.github/workflows/deploy-client.yml`
 
 **Step 1: Create the workflow file**
@@ -690,7 +710,7 @@ git push origin main
 If a server deploy breaks the API:
 
 ```bash
-ssh -i ~/.ssh/fullstack-auth-key.pem ec2-user@<EC2_PUBLIC_DNS>
+ssh -i ~/.ssh/mystocks.pem ubuntu@<EC2_PUBLIC_DNS>
 cd /app/fullstack-auth
 git log --oneline -5          # find last good commit
 git checkout <good-commit>
