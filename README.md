@@ -4,12 +4,12 @@ Monorepo for a fullstack authentication system built with Turborepo and pnpm wor
 
 ## Apps & Packages
 
-| Package | Path | Tech | Port |
-|---|---|---|---|
-| `@auth/auth` | `client/auth/` | Nuxt 4 + Nuxt UI | 3000 |
-| `@auth/dashboard` | `client/dashboard/` | Next.js 15 + React 19 | 3001 |
-| `@auth/api` | `server/` | NestJS | 3002 |
-| `@auth/types` | `packages/types/` | TypeScript (shared types) | — |
+| Package           | Path                | Tech                      | Port |
+| ----------------- | ------------------- | ------------------------- | ---- |
+| `@auth/auth`      | `client/auth/`      | Nuxt 4 + Nuxt UI          | 3000 |
+| `@auth/dashboard` | `client/dashboard/` | Next.js 15 + React 19     | 3001 |
+| `@auth/api`       | `server/`           | NestJS                    | 3002 |
+| `@auth/types`     | `packages/types/`   | TypeScript (shared types) | —    |
 
 ## Prerequisites
 
@@ -125,10 +125,10 @@ fullstack-auth/
 
 Both client apps share the same domain, split by path prefix:
 
-| Path | App |
-|---|---|
-| `/login`, `/register`, `/verify-email`, `/forgot-password`, `/reset-password` | `@auth/auth` (Nuxt) |
-| `/dashboard/*` | `@auth/dashboard` (Next.js) |
+| Path                                                                          | App                         |
+| ----------------------------------------------------------------------------- | --------------------------- |
+| `/login`, `/register`, `/verify-email`, `/forgot-password`, `/reset-password` | `@auth/auth` (Nuxt)         |
+| `/dashboard/*`                                                                | `@auth/dashboard` (Next.js) |
 
 A reverse proxy (Nginx or similar) routes requests to the correct app in production.
 
@@ -149,3 +149,7 @@ pnpm --filter <package-name> <script>
 # Show workspace dependency graph
 pnpm exec turbo run build --dry
 ```
+
+# EC2
+
+ssh -i ~/.ssh/mystocks.pem ubuntu@ec2-44-192-67-232.compute-1.amazonaws.com

@@ -20,7 +20,7 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            cd /app/fullstack-auth
+            cd /app/mystocks
             git pull origin main
             cd server
             docker compose -f docker-compose.prod.yml build --no-cache

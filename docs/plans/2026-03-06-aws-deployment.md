@@ -42,7 +42,7 @@ chmod 400 ~/.ssh/mystocks.pem
 
 AWS Console → EC2 → Security Groups → Create:
 
-- Name: `fullstack-auth-sg`
+- Name: `mystocks-sg`
 - Inbound rules:
   - SSH (22) — My IP
   - HTTP (80) — Anywhere (0.0.0.0/0)
@@ -52,11 +52,11 @@ AWS Console → EC2 → Security Groups → Create:
 
 AWS Console → EC2 → Launch Instance:
 
-- Name: `fullstack-auth-server`
+- Name: `mystocks-server`
 - AMI: Ubuntu Server 24.04 LTS
 - Instance type: `t3.small`
 - Key pair: `mystocks`
-- Security group: `fullstack-auth-sg`
+- Security group: `mystocks-sg`
 - Storage: 20 GiB gp3
 
 **Step 4: Note the public DNS**
@@ -314,7 +314,7 @@ CMD ["node", "dist/main"]
 
 ```bash
 cd server
-docker build -t fullstack-auth-server .
+docker build -t mystocks-server .
 ```
 
 Expected: Image builds successfully.
@@ -375,7 +375,7 @@ ALLOWED_ORIGINS=<CLOUDFRONT_URL>
 **Step 3: Do first manual deploy to verify**
 
 ```bash
-cd /app/fullstack-auth/server
+cd /app/mystocks/server
 docker compose -f docker-compose.prod.yml up -d --build
 ```
 
@@ -413,7 +413,7 @@ Expected: `ok`
 
 AWS Console → S3 → Create bucket:
 
-- Name: `fullstack-auth-client` (must be globally unique, add suffix if needed)
+- Name: `mystocks-app` (must be globally unique, add suffix if needed)
 - Region: same as EC2 (e.g. `us-east-1`)
 - Block all public access: ON (CloudFront uses OAC)
 
@@ -421,7 +421,7 @@ AWS Console → S3 → Create bucket:
 
 AWS Console → CloudFront → Origin Access → Create OAC:
 
-- Name: `fullstack-auth-oac`
+- Name: `mystocks-oac`
 - Origin type: S3
 - Signing behavior: Sign requests
 
@@ -430,7 +430,7 @@ AWS Console → CloudFront → Origin Access → Create OAC:
 AWS Console → CloudFront → Create distribution:
 
 - Origin domain: select your S3 bucket
-- Origin access: Origin Access Control → select `fullstack-auth-oac`
+- Origin access: Origin Access Control → select `mystocks-oac`
 - Copy the S3 bucket policy when prompted and apply it to the bucket
 - Viewer protocol policy: Redirect HTTP to HTTPS
 - Default root object: `index.html`
@@ -447,7 +447,7 @@ After creation (takes ~5 min), copy the Distribution domain name:
 
 ```bash
 ssh -i ~/.ssh/mystocks.pem ubuntu@<EC2_PUBLIC_DNS>
-cd /app/fullstack-auth/server
+cd /app/mystocks/server
 nano .env
 # Update ALLOWED_ORIGINS=https://dXXXXXXXXXXXX.cloudfront.net
 ```
@@ -477,29 +477,29 @@ AWS Console → IAM → Policies → Create policy → JSON:
     {
       "Effect": "Allow",
       "Action": ["s3:PutObject", "s3:DeleteObject", "s3:ListBucket"],
-      "Resource": ["arn:aws:s3:::fullstack-auth-client", "arn:aws:s3:::fullstack-auth-client/*"]
+      "Resource": ["arn:aws:s3:::mystocks-app", "arn:aws:s3:::mystocks-app/*"]
     },
     {
       "Effect": "Allow",
       "Action": "cloudfront:CreateInvalidation",
-      "Resource": "arn:aws:cloudfront::<ACCOUNT_ID>:distribution/<DISTRIBUTION_ID>"
+      "Resource": "arn:aws:cloudfront::246599827893:distribution/E2VCDBVFBCNSTZ"
     }
   ]
 }
 ```
 
-- Policy name: `fullstack-auth-github-actions`
+- Policy name: `mystocks-github-actions`
 
 **Step 2: Create IAM user**
 
 AWS Console → IAM → Users → Create user:
 
-- Username: `fullstack-auth-github-actions`
-- Attach policy: `fullstack-auth-github-actions`
+- Username: `mystocks-github-actions`
+- Attach policy: `mystocks-github-actions`
 
 **Step 3: Create access key**
 
-IAM → Users → `fullstack-auth-github-actions` → Security credentials → Create access key:
+IAM → Users → `mystocks-github-actions` → Security credentials → Create access key:
 
 - Use case: Application running outside AWS
 - Save `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`
@@ -527,7 +527,7 @@ Add each of these:
 | `EC2_USER`              | `ubuntu`                                              |
 | `AWS_ACCESS_KEY_ID`     | From Task 7                                           |
 | `AWS_SECRET_ACCESS_KEY` | From Task 7                                           |
-| `AWS_S3_BUCKET`         | `fullstack-auth-client`                               |
+| `AWS_S3_BUCKET`         | `mystocks-app`                                        |
 | `AWS_CLOUDFRONT_ID`     | CloudFront distribution ID (from Task 6)              |
 | `AWS_REGION`            | `us-east-1` (or your region)                          |
 | `EC2_PUBLIC_DNS`        | EC2 public DNS (also used as API base)                |
@@ -566,7 +566,7 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            cd /app/fullstack-auth
+            cd /app/mystocks
             git pull origin main
             cd server
             docker compose -f docker-compose.prod.yml build --no-cache
@@ -711,7 +711,7 @@ If a server deploy breaks the API:
 
 ```bash
 ssh -i ~/.ssh/mystocks.pem ubuntu@<EC2_PUBLIC_DNS>
-cd /app/fullstack-auth
+cd /app/mystocks
 git log --oneline -5          # find last good commit
 git checkout <good-commit>
 cd server
