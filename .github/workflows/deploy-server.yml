@@ -24,7 +24,7 @@ jobs:
             cd /app/mystocks
             git pull origin main
             cd server
-            docker compose -f docker-compose.prod.yml build --no-cache
+            docker compose -f docker-compose.prod.yml build
             docker compose -f docker-compose.prod.yml up -d
             docker compose -f docker-compose.prod.yml wait nestjs
             docker exec nestjs npx prisma migrate deploy
