@@ -24,8 +24,21 @@ jobs:
             cd /app/mystocks
             git pull origin main
             cd server
-            docker compose -f docker-compose.prod.yml build
-            docker compose -f docker-compose.prod.yml up -d
-            docker compose -f docker-compose.prod.yml wait nestjs
+
+            # Збираємо та запускаємо все разом (це швидше та надійніше)
+            docker compose -f docker-compose.prod.yml up -d --build
+
+            # Чекаємо, поки NestJS ініціалізується (замість 'wait', який чекає зупинки)
+            echo "Waiting for NestJS to start..."
+            sleep 15
+
+            # Виконуємо міграції
             docker exec nestjs npx prisma migrate deploy
-            echo "Server deployed successfully"
+
+            # (Опціонально) Якщо міграції не знайдено, можна додати db push:
+            # docker exec nestjs npx prisma db push
+
+            # Обов'язково чистимо старі образи, щоб диск знову не забився
+            docker image prune -f
+
+            echo "Server deployed successfully 🚀"
