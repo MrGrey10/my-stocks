@@ -19,7 +19,7 @@ RUN npm ci --omit=dev
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/prisma ./prisma
 
-RUN npm install prisma --save-dev
+RUN npm install prisma@6.4.1 --save-dev
 
 EXPOSE 3001
 
