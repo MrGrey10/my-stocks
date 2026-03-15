@@ -152,4 +152,4 @@ pnpm exec turbo run build --dry
 
 # EC2
 
-ssh -i ~/.ssh/mystocks.pem ubuntu@ec2-44-192-67-232.compute-1.amazonaws.com
+ssh -i ~/.ssh/mystocks.pem ubuntu@ec2-50-17-41-96.compute-1.amazonaws.com

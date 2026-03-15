@@ -52,7 +52,7 @@ AWS Console → EC2 → Security Groups → Create:
 
 AWS Console → EC2 → Launch Instance:
 
-- Name: `mystocks-server`
+- Name: `mystocks-big`
 - AMI: Ubuntu Server 24.04 LTS
 - Instance type: `t3.small`
 - Key pair: `mystocks`
@@ -68,7 +68,7 @@ Format: `ec2-XX-XX-XX-XX.compute-1.amazonaws.com`
 
 ```bash
 ssh -i ~/.ssh/mystocks.pem ubuntu@<EC2_PUBLIC_DNS>
-ssh -i ~/.ssh/mystocks.pem ubuntu@ec2-44-192-67-232.compute-1.amazonaws.com
+ssh -i ~/.ssh/mystocks.pem ubuntu@ec2-54-221-161-252.compute-1.amazonaws.com
 ```
 
 Expected: You are connected to the EC2 instance shell.
@@ -87,7 +87,7 @@ Expected: You are connected to the EC2 instance shell.
 
 ```bash
 ssh -i ~/.ssh/mystocks.pem ubuntu@<EC2_PUBLIC_DNS>
-ssh -i ~/.ssh/mystocks.pem ubuntu@ec2-44-192-67-232.compute-1.amazonaws.com
+ssh -i ~/.ssh/mystocks.pem ubuntu@ec2-54-221-161-252.compute-1.amazonaws.com
 ```
 
 **Step 2: Install Docker**
@@ -111,7 +111,7 @@ Log out and back in for group change to take effect:
 ```bash
 exit
 ssh -i ~/.ssh/mystocks.pem ubuntu@<EC2_PUBLIC_DNS>
-ssh -i ~/.ssh/mystocks.pem ubuntu@ec2-44-192-67-232.compute-1.amazonaws.com
+ssh -i ~/.ssh/mystocks.pem ubuntu@ec2-54-221-161-252.compute-1.amazonaws.com
 ```
 
 **Step 3: Verify Docker and Docker Compose**
@@ -338,7 +338,7 @@ git commit -m "feat: add server Dockerfile"
 
 ```bash
 ssh -i ~/.ssh/mystocks.pem ubuntu@<EC2_PUBLIC_DNS>
-ssh -i ~/.ssh/mystocks.pem ubuntu@ec2-44-192-67-232.compute-1.amazonaws.com
+ssh -i ~/.ssh/mystocks.pem ubuntu@ec2-54-221-161-252.compute-1.amazonaws.com
 ```
 
 **Step 2: Create .env in server directory**
@@ -382,7 +382,7 @@ docker compose -f docker-compose.prod.yml up -d --build
 **Step 4: Run Prisma migrations**
 
 ```bash
-docker exec server-nestjs-1 npx prisma migrate deploy
+docker exec nestjs npx prisma migrate deploy
 ```
 
 **Step 5: Verify containers are running**

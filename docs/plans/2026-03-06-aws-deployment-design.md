@@ -43,13 +43,13 @@ GitHub Repo (main branch)
 
 ### EC2
 
-| Property | Value |
-|----------|-------|
-| Instance type | t3.small |
-| OS | Amazon Linux 2023 |
-| Storage | 20GB gp3 EBS |
-| SSH access | Your IP only (port 22) |
-| HTTP access | Port 80 open (API) |
+| Property      | Value                  |
+| ------------- | ---------------------- |
+| Instance type | t3.small               |
+| OS            | Amazon Linux 2023      |
+| Storage       | 20GB gp3 EBS           |
+| SSH access    | Your IP only (port 22) |
+| HTTP access   | Port 80 open (API)     |
 
 - Docker + Docker Compose installed on instance
 - App code cloned to `/app/fullstack-auth`
@@ -65,6 +65,7 @@ GitHub Repo (main branch)
 ### IAM (GitHub Actions user)
 
 Minimal permissions:
+
 - `s3:PutObject`, `s3:DeleteObject`, `s3:ListBucket` — scoped to specific bucket
 - `cloudfront:CreateInvalidation` — scoped to specific distribution
 
@@ -73,6 +74,7 @@ Minimal permissions:
 ## CI/CD Pipeline
 
 ### Trigger
+
 Push to `main` branch.
 
 ### Job 1: Deploy Server
@@ -99,16 +101,16 @@ Push to `main` branch.
 
 ### GitHub Secrets
 
-| Secret | Description |
-|--------|-------------|
-| `EC2_HOST` | EC2 public DNS |
-| `EC2_SSH_KEY` | Private key PEM |
-| `EC2_USER` | `ec2-user` |
-| `AWS_ACCESS_KEY_ID` | IAM user access key |
-| `AWS_SECRET_ACCESS_KEY` | IAM user secret key |
-| `AWS_S3_BUCKET` | S3 bucket name |
-| `AWS_CLOUDFRONT_ID` | CloudFront distribution ID |
-| `AWS_REGION` | e.g. `us-east-1` |
+| Secret                  | Description                |
+| ----------------------- | -------------------------- |
+| `EC2_HOST`              | EC2 public DNS             |
+| `EC2_SSH_KEY`           | Private key PEM            |
+| `EC2_USER`              | `ubuntu`                   |
+| `AWS_ACCESS_KEY_ID`     | IAM user access key        |
+| `AWS_SECRET_ACCESS_KEY` | IAM user secret key        |
+| `AWS_S3_BUCKET`         | S3 bucket name             |
+| `AWS_CLOUDFRONT_ID`     | CloudFront distribution ID |
+| `AWS_REGION`            | e.g. `us-east-1`           |
 
 ---
 
