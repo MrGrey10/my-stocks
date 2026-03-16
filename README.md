@@ -1,4 +1,4 @@
-# fullstack-auth
+# mystocks
 
 Monorepo for a fullstack authentication system built with Turborepo and pnpm workspaces.
 

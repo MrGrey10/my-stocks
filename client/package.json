@@ -1,0 +1,28 @@
+{
+	"name": "@client",
+	"type": "module",
+	"private": true,
+	"scripts": {
+		"build": "nuxt build",
+		"dev": "nuxt dev --port 3000",
+		"generate": "nuxt generate",
+		"preview": "nuxt preview",
+		"postinstall": "nuxt prepare",
+		"format": "prettier --write \"**/*.{js,ts,vue,json,css,md}\""
+	},
+	"dependencies": {
+		"@auth/types": "workspace:*",
+		"@nuxt/ui": "^4.4.0",
+		"nuxt": "^4.3.0",
+		"tailwindcss": "^4.1.18",
+		"vue": "^3.5.27",
+		"vue-router": "^4.6.4"
+	},
+	"devDependencies": {
+		"@oxc-minify/binding-darwin-arm64": "^0.112.0",
+		"@oxc-parser/binding-darwin-arm64": "^0.112.0",
+		"@oxc-transform/binding-darwin-arm64": "^0.112.0",
+		"@types/node": "^25.2.1",
+		"prettier": "^3.0.0"
+	}
+}

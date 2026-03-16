@@ -1,4 +1,4 @@
 packages:
-  - 'client/auth'
+  - 'client'
   - 'server'
   - 'packages/*'

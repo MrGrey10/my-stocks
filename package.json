@@ -1,5 +1,5 @@
 {
-  "name": "fullstack-auth",
+  "name": "my-stocks",
   "private": true,
   "scripts": {
     "build": "turbo run build",
