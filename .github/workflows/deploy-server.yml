@@ -33,12 +33,12 @@ jobs:
             sleep 15
 
             # Виконуємо міграції
-            docker exec nestjs npx prisma migrate deploy
+            sudo docker exec nestjs npx prisma migrate deploy
 
             # (Опціонально) Якщо міграції не знайдено, можна додати db push:
             # docker exec nestjs npx prisma db push
 
             # Обов'язково чистимо старі образи, щоб диск знову не забився
-            docker image prune -f
+            sudo docker image prune -f
 
             echo "Server deployed successfully 🚀"

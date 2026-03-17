@@ -173,3 +173,7 @@ https://dsvyaq4izrpf4.cloudfront.net/
 # BACK
 
 54-221-161-252.sslip.io
+
+# LOGS NESTJS
+
+sudo docker logs nestjs -f
