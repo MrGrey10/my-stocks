@@ -3,6 +3,9 @@ export default defineNuxtConfig({
 	compatibilityDate: '2025-07-15',
 	devtools: { enabled: true },
 	modules: ['@nuxt/ui', '@pinia/nuxt'],
+	build: {
+		transpile: ['vue'],
+	},
 	css: ['./app/assets/css/main.css'],
 	runtimeConfig: {
 		public: {
