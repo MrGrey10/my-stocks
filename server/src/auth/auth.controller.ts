@@ -1,5 +1,4 @@
 import {
-	BadRequestException,
 	Body,
 	Controller,
 	Get,
@@ -51,15 +50,19 @@ export class AuthController {
 		@Query('code') code: string,
 		@Param('provider') provider: string,
 	) {
+		const origin = this.configService.getOrThrow<string>('ALLOWED_ORIGIN');
+
 		if (!code) {
-			throw new BadRequestException('Code is required');
+			return res.redirect(`${origin}/login?error=Authorization+code+is+missing`);
 		}
 
-		await this.authService.extractProfileByCode(req, provider, code);
-
-		return res.redirect(
-			`${this.configService.getOrThrow<string>('ALLOWED_ORIGIN')}`,
-		);
+		try {
+			await this.authService.extractProfileByCode(req, provider, code);
+			return res.redirect(origin);
+		} catch (error: any) {
+			const message = encodeURIComponent(error?.message ?? 'OAuth login failed');
+			return res.redirect(`${origin}/login?error=${message}`);
+		}
 	}
 
 	@UseGuards(AuthProviderGuard)

@@ -29,4 +29,15 @@ import LoginForm from '~/features/auth/login-form.vue';
 // definePageMeta({
 // 	middleware: 'guest',
 // });
+
+const toast = useToast();
+const route = useRoute();
+
+onMounted(() => {
+	const error = route.query.error as string | undefined;
+	if (error) {
+		toast.add({ title: 'Login failed', description: error, color: 'error' });
+		navigateTo('/login', { replace: true });
+	}
+});
 </script>
