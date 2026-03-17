@@ -12,6 +12,8 @@ async function bootstrap() {
 	const app = await NestFactory.create(AppModule);
 	const configService = app.get(ConfigService);
 
+	app.getHttpAdapter().getInstance().set('trust proxy', 1);
+
 	const redisClient = createClient({
 		url: configService.getOrThrow<string>('REDIS_URI'),
 	});
