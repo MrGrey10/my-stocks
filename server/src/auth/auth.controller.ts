@@ -16,7 +16,6 @@ import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { Request, Response } from 'express';
 import { LoginDto } from './dto/login.dto';
-import { Recaptcha } from '@nestlab/google-recaptcha';
 import { AuthProviderGuard } from './guards/provider.guard';
 import { ProviderService } from './provider/provider.service';
 import { ConfigService } from '@nestjs/config';
