@@ -38,6 +38,9 @@ jobs:
             # (Опціонально) Якщо міграції не знайдено, можна додати db push:
             # docker exec nestjs npx prisma db push
 
+            # Reload nginx config (it uses a pre-built image, so compose --build won't restart it)
+            sudo docker exec nginx nginx -s reload
+
             # Обов'язково чистимо старі образи, щоб диск знову не забився
             sudo docker image prune -f
 
