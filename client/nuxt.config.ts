@@ -4,6 +4,10 @@ export default defineNuxtConfig({
 	ssr: false,
 	devtools: { enabled: true },
 	modules: ['@nuxt/ui', '@pinia/nuxt'],
+	colorMode: {
+		preference: 'light',
+		forced: true,
+	},
 	build: {
 		transpile: ['vue'],
 	},
