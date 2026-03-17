@@ -13,14 +13,17 @@ export const useAuth = () => {
 	const toast = useToast();
 	const config = useRuntimeConfig();
 	const baseURL = config.public.apiBase;
+	const userStore = useUserStore();
 
-	const handleError = (error: any): ApiError => {
+	const handleError = (error: any, options?: { silent?: boolean }): ApiError => {
 		if (error.data) {
-			toast.add({
-				title: 'Error',
-				description: error.data.message || 'An error occurred',
-				color: 'error',
-			});
+			if (!options?.silent) {
+				toast.add({
+					title: 'Error',
+					description: error.data.message || 'An error occurred',
+					color: 'error',
+				});
+			}
 			return {
 				message: error.data.message || 'An error occurred',
 				statusCode: error.statusCode || 500,
@@ -62,7 +65,8 @@ export const useAuth = () => {
 			};
 			return { data, error: null };
 		} catch (error: any) {
-			return { data: null, error: handleError(error) };
+			const apiError = handleError(error, { silent: error.data?.message === 'Email not verified' });
+			return { data: null, error: apiError };
 		}
 	};
 
@@ -75,6 +79,7 @@ export const useAuth = () => {
 			useState<{ isAuthenticated: boolean }>('auth').value = {
 				isAuthenticated: false,
 			};
+			userStore.clearProfile();
 			await navigateTo('/login');
 			return { error: null };
 		} catch (error: any) {
