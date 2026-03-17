@@ -7,6 +7,7 @@ export default defineNuxtConfig({
 	colorMode: {
 		preference: 'light',
 		forced: true,
+		storageKey: 'color-mode',
 	},
 	build: {
 		transpile: ['vue'],
