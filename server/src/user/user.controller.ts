@@ -13,7 +13,7 @@ export class UserController {
 	@HttpCode(HttpStatus.OK)
 	@Get('profile')
 	public async findProfile(@Authorized('id') userId: string) {
-		return this.userService.findById(userId);
+		return this.userService.findProfile(userId);
 	}
 
 	@Authorization(Role.ADMIN)
