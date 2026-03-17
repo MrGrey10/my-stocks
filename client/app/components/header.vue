@@ -6,6 +6,25 @@ const searchTerm = ref('');
 const isSearchOpen = ref(false);
 const { logout } = useAuth();
 
+const userStore = useUserStore()
+
+const initials = (name: string) =>
+  name
+    .split(' ')
+    .filter(Boolean)
+    .map(n => n[0])
+    .join('')
+    .toUpperCase()
+    .slice(0, 2)
+
+onMounted(async () => {
+  try {
+    await userStore.fetchProfile()
+  } catch {
+    // Non-critical: avatar falls back to default placeholder
+  }
+})
+
 const profileMenuItems = [
 	[
 		{
@@ -87,7 +106,6 @@ const groups = computed(() => [
 		id: 'actions',
 		label: 'Actions',
 		search: async (q: string) => {
-			const { logout } = useAuth();
 			const actions = [
 				{
 					id: 'logout',
@@ -134,7 +152,11 @@ const openSearch = () => {
 		<template #right>
 			<UDropdownMenu :items="profileMenuItems" :content="{ align: 'end' }">
 				<span class="cursor-pointer">
-					<UAvatar />
+					<UAvatar
+                  :src="userStore.profile?.picture || undefined"
+                  :text="userStore.profile?.name ? initials(userStore.profile.name) : undefined"
+                  :alt="userStore.profile?.name"
+                />
 				</span>
 			</UDropdownMenu>
 		</template>
