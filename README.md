@@ -167,3 +167,7 @@ npx prisma studio
 # FRONT
 
 https://dsvyaq4izrpf4.cloudfront.net/
+
+# BACK
+
+mystocksapi.duckdns.org
