@@ -29,14 +29,14 @@ export class AuthController {
 		private readonly configService: ConfigService,
 	) {}
 
-	@Recaptcha()
+	// @Recaptcha()
 	@Post('register')
 	@HttpCode(HttpStatus.OK)
 	public async register(@Req() req: Request, @Body() dto: RegisterDto) {
 		return this.authService.register(req, dto);
 	}
 
-	@Recaptcha()
+	// @Recaptcha()
 	@Post('login')
 	@HttpCode(HttpStatus.OK)
 	public async login(@Req() req: Request, @Body() dto: LoginDto) {

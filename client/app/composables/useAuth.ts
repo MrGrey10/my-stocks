@@ -65,7 +65,7 @@ export const useAuth = () => {
 			};
 			return { data, error: null };
 		} catch (error: any) {
-			const apiError = handleError(error, { silent: error.data?.message === 'Email not verified' });
+			const apiError = handleError(error, { silent: true });
 			return { data: null, error: apiError };
 		}
 	};
