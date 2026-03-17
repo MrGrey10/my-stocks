@@ -4,6 +4,31 @@ import type { NavigationMenuItem } from '@nuxt/ui';
 const route = useRoute();
 const searchTerm = ref('');
 const isSearchOpen = ref(false);
+const { logout } = useAuth();
+
+const profileMenuItems = [
+	[
+		{
+			label: 'Profile',
+			icon: 'i-heroicons-user',
+			to: '/profile',
+		},
+		{
+			label: 'Settings',
+			icon: 'i-heroicons-cog-6-tooth',
+			to: '/settings',
+		},
+	],
+	[
+		{
+			label: 'Logout',
+			icon: 'i-heroicons-arrow-right-on-rectangle',
+			onSelect: async () => {
+				await logout();
+			},
+		},
+	],
+];
 
 const items = computed<NavigationMenuItem[]>(() => [
 	{
@@ -107,9 +132,11 @@ const openSearch = () => {
 		/>
 
 		<template #right>
-			<UColorModeButton />
-
-			<UAvatar />
+			<UDropdownMenu :items="profileMenuItems" :content="{ align: 'end' }">
+				<span class="cursor-pointer">
+					<UAvatar />
+				</span>
+			</UDropdownMenu>
 		</template>
 	</UHeader>
 </template>
