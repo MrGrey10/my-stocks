@@ -163,3 +163,7 @@ scp -i ~/.ssh/mystocks.pem .env.production ubuntu@ec2-54-221-161-252.compute-1.a
 # PRISMA
 
 npx prisma studio
+
+# FRONT
+
+https://dsvyaq4izrpf4.cloudfront.net/

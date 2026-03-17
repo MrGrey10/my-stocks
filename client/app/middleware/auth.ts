@@ -1,18 +1,14 @@
-import { getCookie } from 'h3';
-
 export default defineNuxtRouteMiddleware(() => {
 	const config = useRuntimeConfig();
 	const sessionCookieName = config.public.sessionCookieName as string;
 
+	const sessionCookie = useCookie(sessionCookieName);
+
 	const auth = useState<{ isAuthenticated: boolean }>('auth', () => ({
-		isAuthenticated: false,
+		isAuthenticated: !!sessionCookie.value,
 	}));
 
-	if (import.meta.server) {
-		const event = useRequestEvent();
-		const sessionValue = event ? getCookie(event, sessionCookieName) : null;
-		auth.value = { isAuthenticated: !!sessionValue?.length };
-	}
+	auth.value = { isAuthenticated: !!sessionCookie.value };
 
 	if (!auth.value.isAuthenticated) {
 		return navigateTo('/login', { replace: true });
