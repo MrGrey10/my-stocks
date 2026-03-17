@@ -62,7 +62,6 @@
 			size="xl"
 			class="flex items-center justify-center hover:bg-gray-100"
 			@click="handleGoogleLogin"
-			:loading="oauthLoading"
 			:disabled="oauthLoading"
 		>
 			<img src="/google-icon.svg" alt="Google" class="size-5" />
@@ -111,6 +110,16 @@ const handleSubmit = async () => {
 		});
 
 		if (error) {
+			if (error.statusCode === 401 && error.message === 'Email not verified') {
+				toast.add({
+					title: 'Email not verified',
+					description: 'We sent a new verification link to your email address.',
+					color: 'warning',
+				});
+				await navigateTo('/verify-email');
+				return;
+			}
+
 			toast.add({
 				title: 'Error',
 				description:
@@ -119,11 +128,6 @@ const handleSubmit = async () => {
 						: error.message?.join(', ') || 'An error occurred',
 				color: 'error',
 			});
-
-			if (error.statusCode === 401 && error.message === 'Email not verified') {
-				await navigateTo('/verify-email');
-				return;
-			}
 
 			if (error.statusCode === 401 && error.message?.includes('Two-factor')) {
 				needsTwoFactor.value = true;
@@ -146,7 +150,7 @@ const handleSubmit = async () => {
 		}
 
 		if (data) {
-			await navigateTo('/dashboard');
+			await navigateTo('/');
 		}
 	} catch (err) {
 		errors.value.general = 'An unexpected error occurred';
@@ -165,7 +169,9 @@ const handleGoogleLogin = async () => {
 	} catch (err) {
 		errors.value.general = 'Failed to connect with Google';
 	} finally {
-		oauthLoading.value = false;
+		setTimeout(() => {
+			oauthLoading.value = false;
+		}, 1000);
 	}
 };
 </script>

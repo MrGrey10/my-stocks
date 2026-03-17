@@ -14,7 +14,7 @@ export default defineNuxtRouteMiddleware(() => {
 		auth.value = { isAuthenticated: !!sessionValue?.length };
 	}
 
-	// if (!auth.value.isAuthenticated) {
-	// 	return navigateTo('/login', { replace: true });
-	// }
+	if (!auth.value.isAuthenticated) {
+		return navigateTo('/login', { replace: true });
+	}
 });

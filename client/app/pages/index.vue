@@ -2,8 +2,8 @@
 	<Header />
 </template>
 
-<!-- <script setup lang="ts">
+<script setup lang="ts">
 definePageMeta({
 	middleware: 'auth',
 });
-</script> -->
+</script>

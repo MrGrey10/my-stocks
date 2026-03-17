@@ -7,15 +7,19 @@ interface ConfirmationTemplateProps {
 	token: string;
 }
 
-export function ConfirmationTemplate({ domain, token }: ConfirmationTemplateProps) {
-	const confirmLink = `${domain}/auth/new-verification?token=${token}`;
+export function ConfirmationTemplate({
+	domain,
+	token,
+}: ConfirmationTemplateProps) {
+	const confirmLink = `${domain}/verify-email?token=${token}`;
 	return (
 		<Tailwind>
 			<Html>
 				<Body className="text-black">
 					<Heading>Confirm your email</Heading>
 					<Text>
-						Thank you for registering. Please click the button below to confirm your email.
+						Thank you for registering. Please click the button below to confirm
+						your email.
 					</Text>
 					<Link href={confirmLink}>Confirm your email</Link>
 					<Text>This link will expire in 1 hour.</Text>
@@ -23,4 +27,4 @@ export function ConfirmationTemplate({ domain, token }: ConfirmationTemplateProp
 			</Html>
 		</Tailwind>
 	);
-};
+}

@@ -88,7 +88,7 @@ export class AuthService {
 					data: {
 						accessToken: profile.access_token,
 						refreshToken,
-						expiresAt: profile.expires_at,
+						expiresAt: profile.expires_at ?? 0,
 					},
 				});
 			} else {
@@ -99,7 +99,7 @@ export class AuthService {
 						provider: profile.provider,
 						accessToken: profile.access_token,
 						refreshToken,
-						expiresAt: profile.expires_at,
+						expiresAt: profile.expires_at ?? 0,
 					},
 				});
 			}
@@ -123,7 +123,7 @@ export class AuthService {
 				provider: profile.provider,
 				accessToken: profile.access_token,
 				refreshToken,
-				expiresAt: profile.expires_at,
+				expiresAt: profile.expires_at ?? 0,
 			},
 		});
 

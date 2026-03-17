@@ -152,4 +152,14 @@ pnpm exec turbo run build --dry
 
 # EC2
 
-ssh -i ~/.ssh/mystocks.pem ubuntu@ec2-50-17-41-96.compute-1.amazonaws.com
+# Connect
+
+ssh -i ~/.ssh/mystocks.pem ubuntu@ec2-54-221-161-252.compute-1.amazonaws.com
+
+# Copy from local terminal
+
+scp -i ~/.ssh/mystocks.pem .env.production ubuntu@ec2-54-221-161-252.compute-1.amazonaws.com:/app/mystocks/server
+
+# PRISMA
+
+npx prisma studio
