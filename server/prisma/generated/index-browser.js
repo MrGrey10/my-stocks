@@ -156,6 +156,56 @@ exports.Prisma.TokenScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.PortfolioScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  userId: 'userId'
+};
+
+exports.Prisma.PortfolioHoldingScalarFieldEnum = {
+  id: 'id',
+  quantity: 'quantity',
+  avgBuyPrice: 'avgBuyPrice',
+  purchasedAt: 'purchasedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  portfolioId: 'portfolioId',
+  tickerId: 'tickerId'
+};
+
+exports.Prisma.TickerScalarFieldEnum = {
+  id: 'id',
+  symbol: 'symbol',
+  name: 'name',
+  type: 'type',
+  exchange: 'exchange',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.WatchlistItemScalarFieldEnum = {
+  id: 'id',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  userId: 'userId',
+  tickerId: 'tickerId'
+};
+
+exports.Prisma.DailyPriceScalarFieldEnum = {
+  id: 'id',
+  date: 'date',
+  open: 'open',
+  high: 'high',
+  low: 'low',
+  close: 'close',
+  volume: 'volume',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  tickerId: 'tickerId'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -186,10 +236,22 @@ exports.TokenType = exports.$Enums.TokenType = {
   TWO_FACTOR: 'TWO_FACTOR'
 };
 
+exports.TickerType = exports.$Enums.TickerType = {
+  STOCK: 'STOCK',
+  ETF: 'ETF',
+  CRYPTO: 'CRYPTO',
+  OTHER: 'OTHER'
+};
+
 exports.Prisma.ModelName = {
   User: 'User',
   Session: 'Session',
-  Token: 'Token'
+  Token: 'Token',
+  Portfolio: 'Portfolio',
+  PortfolioHolding: 'PortfolioHolding',
+  Ticker: 'Ticker',
+  WatchlistItem: 'WatchlistItem',
+  DailyPrice: 'DailyPrice'
 };
 
 /**

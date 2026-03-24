@@ -9,18 +9,20 @@ datasource db {
 }
 
 model User {
-  id               String     @id @default(uuid())
-  email            String     @unique
+  id               String          @id @default(uuid())
+  email            String          @unique
   password         String
-  createdAt        DateTime   @default(now()) @map("created_at")
-  updatedAt        DateTime   @updatedAt @map("updated_at")
-  role             Role       @default(USER)
+  createdAt        DateTime        @default(now()) @map("created_at")
+  updatedAt        DateTime        @updatedAt @map("updated_at")
+  role             Role            @default(USER)
   name             String
   picture          String?
-  verified         Boolean    @default(false) @map("verified")
-  twoFactorEnabled Boolean    @default(false) @map("two_factor_enabled")
-  authMethod       AuthMethod @map("auth_method")
+  verified         Boolean         @default(false) @map("verified")
+  twoFactorEnabled Boolean         @default(false) @map("two_factor_enabled")
+  authMethod       AuthMethod      @map("auth_method")
   sessions         Session[]
+  portfolios       Portfolio[]
+  watchlist        WatchlistItem[]
 
   @@map("users")
 }
@@ -65,4 +67,94 @@ enum TokenType {
   VERIFICATION
   PASSWORD_RESET
   TWO_FACTOR
+}
+
+model Portfolio {
+  id        String   @id @default(uuid())
+  name      String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  userId   String             @map("user_id")
+  user     User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  holdings PortfolioHolding[]
+
+  @@index([userId])
+  @@map("portfolios")
+}
+
+model PortfolioHolding {
+  id          String   @id @default(uuid())
+  quantity    Decimal  @db.Decimal(18, 8)
+  avgBuyPrice Decimal  @map("avg_buy_price") @db.Decimal(18, 8)
+  purchasedAt DateTime @default(now()) @map("purchased_at")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  portfolioId String    @map("portfolio_id")
+  portfolio   Portfolio @relation(fields: [portfolioId], references: [id], onDelete: Cascade)
+  tickerId    String    @map("ticker_id")
+  ticker      Ticker    @relation(fields: [tickerId], references: [id], onDelete: Restrict)
+
+  @@index([portfolioId])
+  @@index([tickerId])
+  @@map("portfolio_holdings")
+}
+
+model Ticker {
+  id        String     @id @default(uuid())
+  symbol    String     @unique
+  name      String
+  type      TickerType
+  exchange  String?
+  createdAt DateTime   @default(now()) @map("created_at")
+  updatedAt DateTime   @updatedAt @map("updated_at")
+
+  holdings    PortfolioHolding[]
+  watchlist   WatchlistItem[]
+  dailyPrices DailyPrice[]
+
+  @@map("tickers")
+}
+
+model WatchlistItem {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  userId   String @map("user_id")
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tickerId String @map("ticker_id")
+  ticker   Ticker @relation(fields: [tickerId], references: [id], onDelete: Restrict)
+
+  @@unique([userId, tickerId])
+  @@index([userId])
+  @@index([tickerId])
+  @@map("watchlist_items")
+}
+
+model DailyPrice {
+  id        String   @id @default(uuid())
+  date      DateTime @db.Date
+  open      Decimal  @db.Decimal(18, 8)
+  high      Decimal  @db.Decimal(18, 8)
+  low       Decimal  @db.Decimal(18, 8)
+  close     Decimal  @db.Decimal(18, 8)
+  volume    BigInt
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  tickerId String @map("ticker_id")
+  ticker   Ticker @relation(fields: [tickerId], references: [id], onDelete: Cascade)
+
+  @@unique([tickerId, date])
+  @@index([tickerId])
+  @@map("daily_prices")
+}
+
+enum TickerType {
+  STOCK
+  ETF
+  CRYPTO
+  OTHER
 }

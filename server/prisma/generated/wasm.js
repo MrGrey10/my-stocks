@@ -128,6 +128,56 @@ exports.Prisma.TokenScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.PortfolioScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  userId: 'userId'
+};
+
+exports.Prisma.PortfolioHoldingScalarFieldEnum = {
+  id: 'id',
+  quantity: 'quantity',
+  avgBuyPrice: 'avgBuyPrice',
+  purchasedAt: 'purchasedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  portfolioId: 'portfolioId',
+  tickerId: 'tickerId'
+};
+
+exports.Prisma.TickerScalarFieldEnum = {
+  id: 'id',
+  symbol: 'symbol',
+  name: 'name',
+  type: 'type',
+  exchange: 'exchange',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.WatchlistItemScalarFieldEnum = {
+  id: 'id',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  userId: 'userId',
+  tickerId: 'tickerId'
+};
+
+exports.Prisma.DailyPriceScalarFieldEnum = {
+  id: 'id',
+  date: 'date',
+  open: 'open',
+  high: 'high',
+  low: 'low',
+  close: 'close',
+  volume: 'volume',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  tickerId: 'tickerId'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -158,10 +208,22 @@ exports.TokenType = exports.$Enums.TokenType = {
   TWO_FACTOR: 'TWO_FACTOR'
 };
 
+exports.TickerType = exports.$Enums.TickerType = {
+  STOCK: 'STOCK',
+  ETF: 'ETF',
+  CRYPTO: 'CRYPTO',
+  OTHER: 'OTHER'
+};
+
 exports.Prisma.ModelName = {
   User: 'User',
   Session: 'Session',
-  Token: 'Token'
+  Token: 'Token',
+  Portfolio: 'Portfolio',
+  PortfolioHolding: 'PortfolioHolding',
+  Ticker: 'Ticker',
+  WatchlistItem: 'WatchlistItem',
+  DailyPrice: 'DailyPrice'
 };
 /**
  * Create the Client
@@ -174,7 +236,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "/Users/pruvorottya/Desktop/petProjects/fullstack-auth/server/prisma/generated",
+      "value": "/Users/pruvorottya/Desktop/petProjects/my-stocks/server/prisma/generated",
       "fromEnvVar": null
     },
     "config": {
@@ -188,7 +250,7 @@ const config = {
       }
     ],
     "previewFeatures": [],
-    "sourceFilePath": "/Users/pruvorottya/Desktop/petProjects/fullstack-auth/server/prisma/schema.prisma",
+    "sourceFilePath": "/Users/pruvorottya/Desktop/petProjects/my-stocks/server/prisma/schema.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
@@ -210,13 +272,13 @@ const config = {
       }
     }
   },
-  "inlineSchema": "generator client {\n  provider = \"prisma-client-js\"\n  output   = \"./generated\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  url      = env(\"POSTGRES_URI\")\n}\n\nmodel User {\n  id               String     @id @default(uuid())\n  email            String     @unique\n  password         String\n  createdAt        DateTime   @default(now()) @map(\"created_at\")\n  updatedAt        DateTime   @updatedAt @map(\"updated_at\")\n  role             Role       @default(USER)\n  name             String\n  picture          String?\n  verified         Boolean    @default(false) @map(\"verified\")\n  twoFactorEnabled Boolean    @default(false) @map(\"two_factor_enabled\")\n  authMethod       AuthMethod @map(\"auth_method\")\n  sessions         Session[]\n\n  @@map(\"users\")\n}\n\nmodel Session {\n  id           String   @id @default(uuid())\n  type         String\n  provider     String\n  accessToken  String   @map(\"access_token\")\n  refreshToken String   @map(\"refresh_token\")\n  expiresAt    Int      @map(\"expires_at\")\n  createdAt    DateTime @default(now()) @map(\"created_at\")\n  updatedAt    DateTime @updatedAt @map(\"updated_at\")\n  userId       String   @map(\"user_id\")\n  user         User     @relation(fields: [userId], references: [id])\n\n  @@map(\"sessions\")\n}\n\nmodel Token {\n  id        String    @id @default(uuid())\n  email     String\n  type      TokenType\n  token     String    @unique\n  expiresIn DateTime  @map(\"expires_in\")\n  createdAt DateTime  @default(now()) @map(\"created_at\")\n\n  @@map(\"tokens\")\n}\n\nenum Role {\n  ADMIN\n  USER\n}\n\nenum AuthMethod {\n  EMAIL\n  GOOGLE\n}\n\nenum TokenType {\n  VERIFICATION\n  PASSWORD_RESET\n  TWO_FACTOR\n}\n",
-  "inlineSchemaHash": "6e3808401a4baee89571ddd68399a2392533a265eecba97b1e4d15618539080a",
+  "inlineSchema": "generator client {\n  provider = \"prisma-client-js\"\n  output   = \"./generated\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  url      = env(\"POSTGRES_URI\")\n}\n\nmodel User {\n  id               String          @id @default(uuid())\n  email            String          @unique\n  password         String\n  createdAt        DateTime        @default(now()) @map(\"created_at\")\n  updatedAt        DateTime        @updatedAt @map(\"updated_at\")\n  role             Role            @default(USER)\n  name             String\n  picture          String?\n  verified         Boolean         @default(false) @map(\"verified\")\n  twoFactorEnabled Boolean         @default(false) @map(\"two_factor_enabled\")\n  authMethod       AuthMethod      @map(\"auth_method\")\n  sessions         Session[]\n  portfolios       Portfolio[]\n  watchlist        WatchlistItem[]\n\n  @@map(\"users\")\n}\n\nmodel Session {\n  id           String   @id @default(uuid())\n  type         String\n  provider     String\n  accessToken  String   @map(\"access_token\")\n  refreshToken String   @map(\"refresh_token\")\n  expiresAt    Int      @map(\"expires_at\")\n  createdAt    DateTime @default(now()) @map(\"created_at\")\n  updatedAt    DateTime @updatedAt @map(\"updated_at\")\n  userId       String   @map(\"user_id\")\n  user         User     @relation(fields: [userId], references: [id])\n\n  @@map(\"sessions\")\n}\n\nmodel Token {\n  id        String    @id @default(uuid())\n  email     String\n  type      TokenType\n  token     String    @unique\n  expiresIn DateTime  @map(\"expires_in\")\n  createdAt DateTime  @default(now()) @map(\"created_at\")\n\n  @@map(\"tokens\")\n}\n\nenum Role {\n  ADMIN\n  USER\n}\n\nenum AuthMethod {\n  EMAIL\n  GOOGLE\n}\n\nenum TokenType {\n  VERIFICATION\n  PASSWORD_RESET\n  TWO_FACTOR\n}\n\nmodel Portfolio {\n  id        String   @id @default(uuid())\n  name      String\n  createdAt DateTime @default(now()) @map(\"created_at\")\n  updatedAt DateTime @updatedAt @map(\"updated_at\")\n\n  userId   String             @map(\"user_id\")\n  user     User               @relation(fields: [userId], references: [id], onDelete: Cascade)\n  holdings PortfolioHolding[]\n\n  @@index([userId])\n  @@map(\"portfolios\")\n}\n\nmodel PortfolioHolding {\n  id          String   @id @default(uuid())\n  quantity    Decimal  @db.Decimal(18, 8)\n  avgBuyPrice Decimal  @map(\"avg_buy_price\") @db.Decimal(18, 8)\n  purchasedAt DateTime @default(now()) @map(\"purchased_at\")\n  createdAt   DateTime @default(now()) @map(\"created_at\")\n  updatedAt   DateTime @updatedAt @map(\"updated_at\")\n\n  portfolioId String    @map(\"portfolio_id\")\n  portfolio   Portfolio @relation(fields: [portfolioId], references: [id], onDelete: Cascade)\n  tickerId    String    @map(\"ticker_id\")\n  ticker      Ticker    @relation(fields: [tickerId], references: [id], onDelete: Restrict)\n\n  @@index([portfolioId])\n  @@index([tickerId])\n  @@map(\"portfolio_holdings\")\n}\n\nmodel Ticker {\n  id        String     @id @default(uuid())\n  symbol    String     @unique\n  name      String\n  type      TickerType\n  exchange  String?\n  createdAt DateTime   @default(now()) @map(\"created_at\")\n  updatedAt DateTime   @updatedAt @map(\"updated_at\")\n\n  holdings    PortfolioHolding[]\n  watchlist   WatchlistItem[]\n  dailyPrices DailyPrice[]\n\n  @@map(\"tickers\")\n}\n\nmodel WatchlistItem {\n  id        String   @id @default(uuid())\n  createdAt DateTime @default(now()) @map(\"created_at\")\n  updatedAt DateTime @updatedAt @map(\"updated_at\")\n\n  userId   String @map(\"user_id\")\n  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)\n  tickerId String @map(\"ticker_id\")\n  ticker   Ticker @relation(fields: [tickerId], references: [id], onDelete: Restrict)\n\n  @@unique([userId, tickerId])\n  @@index([userId])\n  @@index([tickerId])\n  @@map(\"watchlist_items\")\n}\n\nmodel DailyPrice {\n  id        String   @id @default(uuid())\n  date      DateTime @db.Date\n  open      Decimal  @db.Decimal(18, 8)\n  high      Decimal  @db.Decimal(18, 8)\n  low       Decimal  @db.Decimal(18, 8)\n  close     Decimal  @db.Decimal(18, 8)\n  volume    BigInt\n  createdAt DateTime @default(now()) @map(\"created_at\")\n  updatedAt DateTime @updatedAt @map(\"updated_at\")\n\n  tickerId String @map(\"ticker_id\")\n  ticker   Ticker @relation(fields: [tickerId], references: [id], onDelete: Cascade)\n\n  @@unique([tickerId, date])\n  @@index([tickerId])\n  @@map(\"daily_prices\")\n}\n\nenum TickerType {\n  STOCK\n  ETF\n  CRYPTO\n  OTHER\n}\n",
+  "inlineSchemaHash": "d800e3955cf345989b1f47f075fb539e983d5bdb278d17bcf9cf04c6c82583f6",
   "copyEngine": true
 }
 config.dirname = '/'
 
-config.runtimeDataModel = JSON.parse("{\"models\":{\"User\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"email\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"password\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"created_at\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"updated_at\"},{\"name\":\"role\",\"kind\":\"enum\",\"type\":\"Role\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"picture\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"verified\",\"kind\":\"scalar\",\"type\":\"Boolean\",\"dbName\":\"verified\"},{\"name\":\"twoFactorEnabled\",\"kind\":\"scalar\",\"type\":\"Boolean\",\"dbName\":\"two_factor_enabled\"},{\"name\":\"authMethod\",\"kind\":\"enum\",\"type\":\"AuthMethod\",\"dbName\":\"auth_method\"},{\"name\":\"sessions\",\"kind\":\"object\",\"type\":\"Session\",\"relationName\":\"SessionToUser\"}],\"dbName\":\"users\"},\"Session\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"type\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"provider\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"accessToken\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"access_token\"},{\"name\":\"refreshToken\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"refresh_token\"},{\"name\":\"expiresAt\",\"kind\":\"scalar\",\"type\":\"Int\",\"dbName\":\"expires_at\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"created_at\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"updated_at\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"user_id\"},{\"name\":\"user\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"SessionToUser\"}],\"dbName\":\"sessions\"},\"Token\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"email\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"type\",\"kind\":\"enum\",\"type\":\"TokenType\"},{\"name\":\"token\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"expiresIn\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"expires_in\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"created_at\"}],\"dbName\":\"tokens\"}},\"enums\":{},\"types\":{}}")
+config.runtimeDataModel = JSON.parse("{\"models\":{\"User\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"email\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"password\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"created_at\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"updated_at\"},{\"name\":\"role\",\"kind\":\"enum\",\"type\":\"Role\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"picture\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"verified\",\"kind\":\"scalar\",\"type\":\"Boolean\",\"dbName\":\"verified\"},{\"name\":\"twoFactorEnabled\",\"kind\":\"scalar\",\"type\":\"Boolean\",\"dbName\":\"two_factor_enabled\"},{\"name\":\"authMethod\",\"kind\":\"enum\",\"type\":\"AuthMethod\",\"dbName\":\"auth_method\"},{\"name\":\"sessions\",\"kind\":\"object\",\"type\":\"Session\",\"relationName\":\"SessionToUser\"},{\"name\":\"portfolios\",\"kind\":\"object\",\"type\":\"Portfolio\",\"relationName\":\"PortfolioToUser\"},{\"name\":\"watchlist\",\"kind\":\"object\",\"type\":\"WatchlistItem\",\"relationName\":\"UserToWatchlistItem\"}],\"dbName\":\"users\"},\"Session\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"type\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"provider\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"accessToken\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"access_token\"},{\"name\":\"refreshToken\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"refresh_token\"},{\"name\":\"expiresAt\",\"kind\":\"scalar\",\"type\":\"Int\",\"dbName\":\"expires_at\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"created_at\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"updated_at\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"user_id\"},{\"name\":\"user\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"SessionToUser\"}],\"dbName\":\"sessions\"},\"Token\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"email\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"type\",\"kind\":\"enum\",\"type\":\"TokenType\"},{\"name\":\"token\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"expiresIn\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"expires_in\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"created_at\"}],\"dbName\":\"tokens\"},\"Portfolio\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"created_at\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"updated_at\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"user_id\"},{\"name\":\"user\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"PortfolioToUser\"},{\"name\":\"holdings\",\"kind\":\"object\",\"type\":\"PortfolioHolding\",\"relationName\":\"PortfolioToPortfolioHolding\"}],\"dbName\":\"portfolios\"},\"PortfolioHolding\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"quantity\",\"kind\":\"scalar\",\"type\":\"Decimal\"},{\"name\":\"avgBuyPrice\",\"kind\":\"scalar\",\"type\":\"Decimal\",\"dbName\":\"avg_buy_price\"},{\"name\":\"purchasedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"purchased_at\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"created_at\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"updated_at\"},{\"name\":\"portfolioId\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"portfolio_id\"},{\"name\":\"portfolio\",\"kind\":\"object\",\"type\":\"Portfolio\",\"relationName\":\"PortfolioToPortfolioHolding\"},{\"name\":\"tickerId\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"ticker_id\"},{\"name\":\"ticker\",\"kind\":\"object\",\"type\":\"Ticker\",\"relationName\":\"PortfolioHoldingToTicker\"}],\"dbName\":\"portfolio_holdings\"},\"Ticker\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"symbol\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"type\",\"kind\":\"enum\",\"type\":\"TickerType\"},{\"name\":\"exchange\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"created_at\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"updated_at\"},{\"name\":\"holdings\",\"kind\":\"object\",\"type\":\"PortfolioHolding\",\"relationName\":\"PortfolioHoldingToTicker\"},{\"name\":\"watchlist\",\"kind\":\"object\",\"type\":\"WatchlistItem\",\"relationName\":\"TickerToWatchlistItem\"},{\"name\":\"dailyPrices\",\"kind\":\"object\",\"type\":\"DailyPrice\",\"relationName\":\"DailyPriceToTicker\"}],\"dbName\":\"tickers\"},\"WatchlistItem\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"created_at\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"updated_at\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"user_id\"},{\"name\":\"user\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"UserToWatchlistItem\"},{\"name\":\"tickerId\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"ticker_id\"},{\"name\":\"ticker\",\"kind\":\"object\",\"type\":\"Ticker\",\"relationName\":\"TickerToWatchlistItem\"}],\"dbName\":\"watchlist_items\"},\"DailyPrice\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"date\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"open\",\"kind\":\"scalar\",\"type\":\"Decimal\"},{\"name\":\"high\",\"kind\":\"scalar\",\"type\":\"Decimal\"},{\"name\":\"low\",\"kind\":\"scalar\",\"type\":\"Decimal\"},{\"name\":\"close\",\"kind\":\"scalar\",\"type\":\"Decimal\"},{\"name\":\"volume\",\"kind\":\"scalar\",\"type\":\"BigInt\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"created_at\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"updated_at\"},{\"name\":\"tickerId\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"ticker_id\"},{\"name\":\"ticker\",\"kind\":\"object\",\"type\":\"Ticker\",\"relationName\":\"DailyPriceToTicker\"}],\"dbName\":\"daily_prices\"}},\"enums\":{},\"types\":{}}")
 defineDmmfProperty(exports.Prisma, config.runtimeDataModel)
 config.engineWasm = {
   getRuntime: async () => require('./query_engine_bg.js'),
