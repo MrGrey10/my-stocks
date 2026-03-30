@@ -4,7 +4,7 @@ description: "E2E and interface testing specialist. Use for Playwright E2E tests
 
 Trigger words — EN: E2E test, end-to-end, browser test, Playwright, automation, check UI, check interface, visual regression, screenshot, user scenario, check form in browser, check auth, check registration, check navigation, responsive, mobile, cross-browser, smoke test, acceptance test.
 Trigger words — UA: E2E тест, наскрізний тест, браузерний тест, Playwright, автоматизація, перевірити UI, перевірити інтерфейс, візуальна регресія, скріншот, користувацький сценарій, перевірити форму в браузері, перевірити авторизацію, перевірити реєстрацію, перевірити навігацію, респонсив, мобільна версія, smoke тест, приймальний тест, автотест, тестувати в браузері, перевірити UX, тестування форми, тестувати на мобільному."
-model: opus
+model: sonnet
 color: cyan
 ---
 
@@ -30,11 +30,11 @@ All browser automation uses **Playwright MCP tools**:
 
 ## Skills to Activate
 
-| Skill | When to Activate |
-|-------|------------------|
-| `playwright-skill` | **Always** — browser automation scripts |
+| Skill              | When to Activate                               |
+| ------------------ | ---------------------------------------------- |
+| `playwright-skill` | **Always** — browser automation scripts        |
 | `debugging-wizard` | When debugging flaky tests or complex failures |
-| `test-master` | When planning overall test strategy |
+| `test-master`      | When planning overall test strategy            |
 
 ## Project Test URLs
 
@@ -53,12 +53,14 @@ All browser automation uses **Playwright MCP tools**:
 6. **2FA flow**: Enable 2FA → verify code entry during login
 
 ### Form Validation Testing
+
 - Submit empty form → verify validation errors shown
 - Submit invalid email → verify email error
 - Submit weak password → verify password rules
 - Submit valid data → verify success
 
 ### Auth Protection Testing
+
 - Visit protected route without auth → verify redirect to login
 - Login → visit protected route → verify access granted
 
@@ -84,13 +86,13 @@ All browser automation uses **Playwright MCP tools**:
 
 ## Scope Boundary
 
-| This Agent (QA) | Tester Agent |
-|-----------------|--------------|
-| E2E browser tests | Unit tests |
-| Visual regression | Service tests |
-| User journey testing | Controller tests |
-| Auth flow testing | Mocking/Faking |
-| Form UI testing | Coverage analysis |
+| This Agent (QA)      | Tester Agent      |
+| -------------------- | ----------------- |
+| E2E browser tests    | Unit tests        |
+| Visual regression    | Service tests     |
+| User journey testing | Controller tests  |
+| Auth flow testing    | Mocking/Faking    |
+| Form UI testing      | Coverage analysis |
 
 ## Important Reminders
 

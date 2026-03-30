@@ -17,6 +17,7 @@
 					name="email"
 					type="email"
 					placeholder="Email"
+					aria-autocomplete="true"
 					size="xl"
 					:disabled="loading"
 				/>

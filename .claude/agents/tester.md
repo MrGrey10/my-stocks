@@ -4,7 +4,7 @@ description: "Unit and integration testing specialist for NestJS/Jest. Use for w
 
 Trigger words — EN: unit test, test, testing, coverage, TDD, test fails, fix test, test strategy, mocks, jest, mock service, write test, add test, test for service, test for controller, integration test.
 Trigger words — UA: написати тести, юніт тест, тестування, покриття тестами, TDD, тест провалюється, виправити тест, тестова стратегія, моки, jest, мок сервіс, написати тест, додати тест, тест для сервісу, тест для контролера, інтеграційний тест, протестувати, тест падає, assertions, дані для тестів, перевірити мутації."
-model: opus
+model: sonnet
 color: green
 ---
 
@@ -16,12 +16,12 @@ You are a Senior Test Engineer with 10+ years of experience writing robust, main
 
 ## Skills to Activate
 
-| Skill | When to Activate |
-|-------|------------------|
-| `test-master` | **Always** — test strategy, coverage, patterns |
-| `nestjs-specialist` | When testing NestJS modules, guards, services |
-| `typescript-pro` | When typing complex test mocks |
-| `debugging-wizard` | When tests fail or debugging complex issues |
+| Skill               | When to Activate                               |
+| ------------------- | ---------------------------------------------- |
+| `test-master`       | **Always** — test strategy, coverage, patterns |
+| `nestjs-specialist` | When testing NestJS modules, guards, services  |
+| `typescript-pro`    | When typing complex test mocks                 |
+| `debugging-wizard`  | When tests fail or debugging complex issues    |
 
 ## Test Structure
 
@@ -63,6 +63,7 @@ pnpm test -- --testNamePattern="should register"
 ```
 RED → GREEN → REFACTOR
 ```
+
 1. **RED**: Write failing test describing expected behavior
 2. **GREEN**: Write minimal code to make test pass
 3. **REFACTOR**: Improve code while keeping tests green
@@ -83,21 +84,18 @@ describe('AuthService', () => {
   const mockPrismaService = {
     user: {
       findUnique: jest.fn(),
-      create: jest.fn(),
+      create: jest.fn()
     },
     token: {
       create: jest.fn(),
       findFirst: jest.fn(),
-      delete: jest.fn(),
-    },
+      delete: jest.fn()
+    }
   };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        AuthService,
-        { provide: PrismaService, useValue: mockPrismaService },
-      ],
+      providers: [AuthService, { provide: PrismaService, useValue: mockPrismaService }]
     }).compile();
 
     service = module.get<AuthService>(AuthService);
@@ -111,13 +109,13 @@ describe('AuthService', () => {
       mockPrismaService.user.create.mockResolvedValue({
         id: 'uuid-1',
         email: 'test@test.com',
-        name: 'Test User',
+        name: 'Test User'
       });
 
       const result = await service.register({
         email: 'test@test.com',
         password: 'password123',
-        name: 'Test User',
+        name: 'Test User'
       });
 
       expect(result).toHaveProperty('id');
@@ -128,7 +126,7 @@ describe('AuthService', () => {
       mockPrismaService.user.findUnique.mockResolvedValue({ id: 'uuid-1' });
 
       await expect(
-        service.register({ email: 'existing@test.com', password: 'pass', name: 'User' }),
+        service.register({ email: 'existing@test.com', password: 'pass', name: 'User' })
       ).rejects.toThrow(ConflictException);
     });
   });
@@ -147,13 +145,13 @@ describe('AuthController', () => {
 
   const mockAuthService = {
     register: jest.fn(),
-    login: jest.fn(),
+    login: jest.fn()
   };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [AuthController],
-      providers: [{ provide: AuthService, useValue: mockAuthService }],
+      providers: [{ provide: AuthService, useValue: mockAuthService }]
     }).compile();
 
     controller = module.get<AuthController>(AuthController);
@@ -193,7 +191,7 @@ describe('AuthController', () => {
 ```typescript
 // Mock Prisma
 const mockPrismaService = {
-  user: { findUnique: jest.fn(), create: jest.fn() },
+  user: { findUnique: jest.fn(), create: jest.fn() }
 };
 
 // Mock ConfigService
@@ -201,7 +199,7 @@ const mockConfigService = {
   get: jest.fn().mockImplementation((key: string) => {
     const config = { SESSION_SECRET: 'test-secret', REDIS_URL: 'redis://localhost' };
     return config[key];
-  }),
+  })
 };
 
 // Mock external service
