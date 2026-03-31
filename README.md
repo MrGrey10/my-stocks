@@ -179,3 +179,9 @@ https://dsvyaq4izrpf4.cloudfront.net/
 # LOGS NESTJS
 
 sudo docker logs nestjs -f
+
+# MANUAL BUILD
+
+docker compose -f docker-compose.prod.yml build --no-cache
+docker compose -f docker-compose.prod.yml up -d
+curl https://dsvyaq4izrpf4.cloudfront.net/api/auth/oauth/connect/google
