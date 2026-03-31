@@ -1,25 +1,29 @@
 FROM node:20-alpine AS builder
 
+RUN npm install -g pnpm
+
 WORKDIR /app
 
-COPY package*.json ./
-RUN npm ci
+COPY package.json pnpm-lock.yaml ./
+RUN pnpm install --frozen-lockfile
 
 COPY . .
 RUN npx prisma generate
-RUN npm run build
+RUN pnpm run build
 
 FROM node:20-alpine AS production
 
+RUN npm install -g pnpm
+
 WORKDIR /app
 
-COPY package*.json ./
-RUN npm ci --omit=dev
+COPY package.json pnpm-lock.yaml ./
+RUN pnpm install --frozen-lockfile --prod
 
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/prisma ./prisma
 
-RUN npm install prisma@6.4.1 --save-dev
+RUN pnpm add prisma@6.4.1 --save-dev
 
 EXPOSE 4000
 

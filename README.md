@@ -156,6 +156,8 @@ pnpm exec turbo run build --dry
 
 ssh -i ~/.ssh/mystocks.pem ubuntu@ec2-54-221-161-252.compute-1.amazonaws.com
 
+cd /app/mystocks/server
+
 docker run --rm -p 80:80 -v /app/mystocks/server/certbot/conf:/etc/letsencrypt certbot/certbot certonly --standalone --email arthur2000701@gmail.com --agree-tos --no-eff-email -d 54-221-161-252.sslip.io
 
 # Copy from local terminal
