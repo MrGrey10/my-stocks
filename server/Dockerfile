@@ -8,7 +8,8 @@ COPY package.json ./
 RUN pnpm install
 
 COPY . .
-RUN npx prisma generate
+RUN pnpm add -D prisma@6.4.1
+RUN pnpm exec prisma generate
 RUN pnpm run build
 
 FROM node:20-alpine AS production
