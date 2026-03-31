@@ -6,25 +6,19 @@ WORKDIR /app
 
 COPY package.json ./
 RUN pnpm install
+RUN pnpm add -D prisma@6.4.1
 
 COPY . .
-RUN pnpm add -D prisma@6.4.1
 RUN pnpm exec prisma generate
 RUN pnpm run build
 
 FROM node:20-alpine AS production
 
-RUN npm install -g pnpm
-
 WORKDIR /app
 
-COPY package.json ./
-RUN pnpm install --prod
-
+COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/prisma ./prisma
-
-RUN pnpm add prisma@6.4.1 --save-dev
 
 EXPOSE 4000
 
