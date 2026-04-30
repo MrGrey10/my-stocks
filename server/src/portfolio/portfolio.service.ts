@@ -52,6 +52,31 @@ export class PortfolioService {
 			orderBy: { createdAt: 'asc' },
 		});
 
+		const allSymbols = [...new Set(portfolios.flatMap((p) => p.holdings.map((h) => h.ticker.symbol)))];
+		const uncachedSymbols = await Promise.all(
+			allSymbols.map(async (s) => {
+				const hit = await this.priceService.getPrice(s);
+				return hit ? null : s;
+			}),
+		).then((results) => results.filter((s): s is string => s !== null));
+
+		if (uncachedSymbols.length > 0) {
+			const quotes = await this.twelveData.batchQuote(uncachedSymbols);
+			await Promise.all(
+				uncachedSymbols.map(async (s) => {
+					const q = quotes[s];
+					if (q && q.status !== 'error' && (q.price ?? q.close)) {
+						await this.priceService.setPrice(s, {
+							price: q.price ?? q.close,
+							change: q.change,
+							changePercent: q.percent_change,
+							updatedAt: new Date().toISOString(),
+						});
+					}
+				}),
+			);
+		}
+
 		const summaries = await Promise.all(
 			portfolios.map(async (p) => {
 				const prices = await Promise.all(
@@ -157,6 +182,31 @@ export class PortfolioService {
 		});
 		if (!portfolio) throw new NotFoundException('Portfolio not found');
 		if (!portfolio.holdings.length) return [];
+
+		const symbols = portfolio.holdings.map((h) => h.ticker.symbol);
+		const uncached = await Promise.all(
+			symbols.map(async (s) => {
+				const hit = await this.priceService.getPrice(s);
+				return hit ? null : s;
+			}),
+		).then((results) => results.filter((s): s is string => s !== null));
+
+		if (uncached.length > 0) {
+			const quotes = await this.twelveData.batchQuote(uncached);
+			await Promise.all(
+				uncached.map(async (s) => {
+					const q = quotes[s];
+					if (q && q.status !== 'error' && (q.price ?? q.close)) {
+						await this.priceService.setPrice(s, {
+							price: q.price ?? q.close,
+							change: q.change,
+							changePercent: q.percent_change,
+							updatedAt: new Date().toISOString(),
+						});
+					}
+				}),
+			);
+		}
 
 		const holdings = await Promise.all(
 			portfolio.holdings.map(async (h) => {

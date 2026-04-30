@@ -19,13 +19,13 @@ export class PriceService {
   }
 
   async setPrice(symbol: string, data: CachedPrice): Promise<void> {
-    await this.redis.set(`price:${symbol}`, JSON.stringify(data), 'EX', 900);
+    await this.redis.set(`price:${symbol}`, JSON.stringify(data), 'EX', 86400);
   }
 
   async setManyPrices(prices: Record<string, CachedPrice>): Promise<void> {
     const pipeline = this.redis.pipeline();
     for (const [symbol, data] of Object.entries(prices)) {
-      pipeline.set(`price:${symbol}`, JSON.stringify(data), 'EX', 900);
+      pipeline.set(`price:${symbol}`, JSON.stringify(data), 'EX', 86400);
     }
     await pipeline.exec();
   }
