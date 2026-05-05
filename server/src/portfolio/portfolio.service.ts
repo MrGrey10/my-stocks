@@ -270,6 +270,23 @@ export class PortfolioService {
 			}
 		}
 
+		const existing = await this.prisma.portfolioHolding.findFirst({
+			where: { portfolioId, tickerId: ticker.id },
+		});
+
+		if (existing) {
+			const existingQty = parseFloat(existing.quantity.toString());
+			const existingAvg = parseFloat(existing.avgBuyPrice.toString());
+			const newQty = existingQty + dto.quantity;
+			const newAvg = (existingQty * existingAvg + dto.quantity * dto.avgBuyPrice) / newQty;
+
+			return this.prisma.portfolioHolding.update({
+				where: { id: existing.id },
+				data: { quantity: newQty, avgBuyPrice: newAvg },
+				include: { ticker: true },
+			});
+		}
+
 		return this.prisma.portfolioHolding.create({
 			data: {
 				portfolioId,
