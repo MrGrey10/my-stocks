@@ -18,8 +18,8 @@ export class MarketDataCron implements OnModuleInit {
 		await this.refreshPrices();
 	}
 
-	/** Refresh all ticker prices in Redis once daily at midnight UTC. */
-	@Cron('0 0 0 * * *')
+	/** Refresh all ticker prices in Redis every hour. */
+	@Cron('0 0 * * * *')
 	async refreshPrices(): Promise<void> {
 		const tickers = await this.prisma.ticker.findMany({
 			select: { symbol: true },
