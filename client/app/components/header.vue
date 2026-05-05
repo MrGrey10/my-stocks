@@ -1,50 +1,6 @@
 <script setup lang="ts">
 const isSearchOpen = ref(false);
 const searchTerm = ref('');
-const { logout } = useAuth();
-
-const userStore = useUserStore();
-
-const initials = (name: string) =>
-	name
-		.split(' ')
-		.filter(Boolean)
-		.map((n) => n[0])
-		.join('')
-		.toUpperCase()
-		.slice(0, 2);
-
-onMounted(async () => {
-	try {
-		await userStore.fetchProfile();
-	} catch {
-		// Non-critical: avatar falls back to default placeholder
-	}
-});
-
-const profileMenuItems = [
-	[
-		{
-			label: 'Profile',
-			icon: 'i-heroicons-user',
-			to: '/',
-		},
-		// {
-		// 	label: 'Settings',
-		// 	icon: 'i-heroicons-cog-6-tooth',
-		// 	to: '/settings',
-		// },
-	],
-	[
-		{
-			label: 'Logout',
-			icon: 'i-heroicons-arrow-right-on-rectangle',
-			onSelect: async () => {
-				await logout();
-			},
-		},
-	],
-];
 
 const config = useRuntimeConfig();
 const base = config.public.apiBase as string;
@@ -66,7 +22,7 @@ const DEFAULT_STOCK_ITEMS: StockItem[] = [
 	{ symbol: 'META', name: 'Meta Platforms Inc' },
 	{ symbol: 'TSLA', name: 'Tesla Inc' },
 	{ symbol: 'SPY', name: 'SPDR S&P 500 ETF Trust' },
-].map((s) => ({
+].map((s: { symbol: string; name: string }) => ({
 	id: s.symbol,
 	label: s.symbol,
 	suffix: s.name,
@@ -81,12 +37,10 @@ let searchTimeout: ReturnType<typeof setTimeout> | null = null;
 
 watch(searchTerm, (q) => {
 	if (searchTimeout) clearTimeout(searchTimeout);
-
 	if (!q) {
 		stockItems.value = DEFAULT_STOCK_ITEMS;
 		return;
 	}
-
 	searchTimeout = setTimeout(async () => {
 		stocksLoading.value = true;
 		try {
@@ -115,19 +69,22 @@ const groups = computed(() => [
 		items: stockItems.value,
 	},
 ]);
-
-const openSearch = () => {
-	isSearchOpen.value = true;
-};
 </script>
 
 <template>
-	<UHeader>
-		<template #title>
-			<Logo text="MyStocks" class="h-6 w-auto" />
-		</template>
+	<header class="topbar">
+		<!-- Search trigger -->
+		<button class="search-trigger" @click="isSearchOpen = true">
+			<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+				<circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/>
+			</svg>
+			<span class="search-placeholder">Search stocks, ETFs, news…</span>
+			<div class="search-kbd">
+				<kbd>⌘</kbd>
+				<kbd>K</kbd>
+			</div>
+		</button>
 
-		<UDashboardSearchButton @click="openSearch" class="w-[460px]" size="xl" />
 		<UDashboardSearch
 			v-model:open="isSearchOpen"
 			v-model:search-term="searchTerm"
@@ -138,20 +95,112 @@ const openSearch = () => {
 			:fuse="{ resultLimit: 42 }"
 		/>
 
-		<template #right>
-			<UDropdownMenu :items="profileMenuItems" :content="{ align: 'end' }">
-				<span class="cursor-pointer">
-					<UAvatar
-						:src="userStore.profile?.picture || undefined"
-						:text="
-							userStore.profile?.name
-								? initials(userStore.profile.name)
-								: undefined
-						"
-						:alt="userStore.profile?.name"
-					/>
-				</span>
-			</UDropdownMenu>
-		</template>
-	</UHeader>
+		<div class="topbar-spacer" />
+
+		<!-- Market status -->
+		<div class="market-status">
+			<span class="market-dot" />
+			<span>Markets open</span>
+		</div>
+
+		<!-- Notifications -->
+		<button class="icon-btn" title="Notifications">
+			<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+				<path d="M6 8a6 6 0 1 1 12 0c0 7 3 8 3 8H3s3-1 3-8z"/><path d="M10.3 21a2 2 0 0 0 3.4 0"/>
+			</svg>
+		</button>
+	</header>
 </template>
+
+<style scoped>
+.topbar {
+	position: sticky;
+	top: 0;
+	z-index: 10;
+	background: oklch(0.985 0.004 70 / 0.85);
+	backdrop-filter: blur(8px);
+	border-bottom: 1px solid var(--line);
+	padding: 12px 32px;
+	display: flex;
+	align-items: center;
+	gap: 16px;
+}
+
+.search-trigger {
+	flex: 1;
+	max-width: 480px;
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	height: 38px;
+	padding: 0 12px;
+	background: var(--bg-elev);
+	border: 1px solid var(--line);
+	border-radius: 10px;
+	color: var(--ink-3);
+	font-size: 13px;
+	text-align: left;
+	cursor: pointer;
+	transition: border-color .15s;
+	font-family: inherit;
+}
+
+.search-trigger:hover {
+	border-color: var(--line-2);
+}
+
+.search-placeholder {
+	flex: 1;
+}
+
+.search-kbd {
+	display: flex;
+	gap: 2px;
+	font-size: 10.5px;
+	font-family: var(--font-mono);
+}
+
+.search-kbd kbd {
+	padding: 2px 5px;
+	background: var(--bg-sunken);
+	border: 1px solid var(--line);
+	border-radius: 4px;
+}
+
+.topbar-spacer {
+	flex: 1;
+}
+
+.market-status {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	font-size: 12px;
+	color: var(--ink-3);
+}
+
+.market-dot {
+	width: 6px;
+	height: 6px;
+	border-radius: 50%;
+	background: var(--pos);
+	flex-shrink: 0;
+}
+
+.icon-btn {
+	width: 32px;
+	height: 32px;
+	border-radius: 8px;
+	display: grid;
+	place-items: center;
+	color: var(--ink-2);
+	border: 1px solid transparent;
+	transition: background .15s, color .15s;
+	font-family: inherit;
+}
+
+.icon-btn:hover {
+	background: var(--bg-sunken);
+	color: var(--ink);
+}
+</style>

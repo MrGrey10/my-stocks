@@ -1,19 +1,18 @@
 <template>
-	<div class="container">
-		<div class="grid grid-cols-1 gap-[12px] min-h-screen">
-			<div class="flex items-center justify-center">
-				<LoginForm />
-			</div>
+	<div class="auth-shell">
+		<!-- Left: form -->
+		<div class="auth-form-side">
+			<LoginForm />
 		</div>
+
+		<!-- Right: dark panel -->
+		<AuthPanel />
 	</div>
 </template>
 
 <script setup lang="ts">
 import LoginForm from '~/features/auth/login-form.vue';
-
-// definePageMeta({
-// 	middleware: 'guest',
-// });
+import AuthPanel from '~/features/auth/auth-panel.vue';
 
 const toast = useToast();
 const route = useRoute();
@@ -26,3 +25,29 @@ onMounted(() => {
 	}
 });
 </script>
+
+<style scoped>
+.auth-shell {
+	min-height: 100vh;
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	background: var(--bg);
+}
+
+.auth-form-side {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 48px;
+}
+
+@media (max-width: 768px) {
+	.auth-shell {
+		grid-template-columns: 1fr;
+	}
+
+	.auth-panel {
+		display: none;
+	}
+}
+</style>

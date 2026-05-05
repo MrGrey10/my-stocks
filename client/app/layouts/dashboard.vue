@@ -1,9 +1,35 @@
 <template>
-	<div class="flex flex-col min-h-screen bg-gray-50 dark:bg-gray-950">
-		<Header />
-
-		<main class="flex-1 overflow-auto">
-			<slot />
-		</main>
+	<div class="shell">
+		<AppSidebar />
+		<div class="shell-body">
+			<Header />
+			<main class="shell-content">
+				<div class="anim-in" :key="$route.path">
+					<slot />
+				</div>
+			</main>
+		</div>
 	</div>
 </template>
+
+<style scoped>
+.shell {
+	min-height: 100vh;
+	background: var(--bg);
+	display: flex;
+}
+
+.shell-body {
+	flex: 1;
+	margin-left: 232px;
+	display: flex;
+	flex-direction: column;
+	min-height: 100vh;
+	min-width: 0;
+}
+
+.shell-content {
+	padding: 28px 32px 64px;
+	flex: 1;
+}
+</style>

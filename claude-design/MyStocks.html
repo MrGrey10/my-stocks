@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8" />
+<title>MyStocks — Investment Platform</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    /* Surfaces — warm off-white system */
+    --bg: oklch(0.985 0.004 70);
+    --bg-elev: oklch(1 0 0);
+    --bg-sunken: oklch(0.965 0.005 70);
+    --bg-nav: oklch(0.985 0.004 70);
+
+    /* Text */
+    --ink: oklch(0.18 0.012 60);
+    --ink-2: oklch(0.42 0.012 60);
+    --ink-3: oklch(0.62 0.012 60);
+    --ink-4: oklch(0.78 0.008 60);
+
+    /* Borders */
+    --line: oklch(0.92 0.005 70);
+    --line-2: oklch(0.88 0.006 70);
+
+    /* Brand orange (matches the star) */
+    --accent: oklch(0.72 0.18 55);
+    --accent-deep: oklch(0.62 0.19 50);
+    --accent-soft: oklch(0.96 0.04 65);
+
+    /* Semantic — slightly desaturated, friendly */
+    --pos: oklch(0.62 0.14 150);
+    --pos-soft: oklch(0.95 0.05 150);
+    --neg: oklch(0.62 0.18 25);
+    --neg-soft: oklch(0.96 0.05 25);
+
+    /* Cool accent for charts/AI */
+    --cool: oklch(0.55 0.10 240);
+    --cool-soft: oklch(0.95 0.025 240);
+
+    --r-sm: 8px;
+    --r: 12px;
+    --r-lg: 16px;
+    --r-xl: 22px;
+
+    --shadow-sm: 0 1px 2px rgba(20,18,15,.04);
+    --shadow: 0 1px 0 rgba(20,18,15,.03), 0 4px 12px rgba(20,18,15,.04);
+    --shadow-lg: 0 1px 0 rgba(20,18,15,.04), 0 12px 32px rgba(20,18,15,.06);
+
+    --font-sans: 'Geist', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    --font-mono: 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: var(--font-sans);
+    background: var(--bg);
+    color: var(--ink);
+    font-size: 14px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    letter-spacing: -0.005em;
+  }
+
+  /* Numbers always tabular + mono */
+  .num, .mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
+
+  button { font-family: inherit; font-size: inherit; cursor: pointer; border: none; background: none; color: inherit; padding: 0; }
+  input { font-family: inherit; font-size: inherit; color: inherit; }
+  a { color: inherit; }
+
+  ::selection { background: var(--accent-soft); color: var(--ink); }
+
+  /* Scrollbar polish */
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-thumb { background: oklch(0.88 0.005 70); border-radius: 8px; border: 2px solid var(--bg); }
+  ::-webkit-scrollbar-thumb:hover { background: oklch(0.78 0.005 70); }
+
+  /* Util */
+  .pos { color: var(--pos); }
+  .neg { color: var(--neg); }
+  .muted { color: var(--ink-3); }
+
+  /* Slide-in transitions */
+  @keyframes slide-up { from { opacity: 0; transform: translateY(8px);} to {opacity: 1; transform: none;} }
+  .anim-in { animation: slide-up .35s ease both; }
+
+  @keyframes shimmer { 0%{background-position:-200px 0} 100%{background-position:200px 0} }
+
+  /* Focus rings */
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 8px; }
+</style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="application/json" id="tweaks-defaults">/*EDITMODE-BEGIN*/{
+    "compact": false,
+    "showAI": true,
+    "candleVolume": true,
+    "rsi": true
+  }/*EDITMODE-END*/</script>
+
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+  <script type="text/babel" src="src/data.jsx"></script>
+  <script type="text/babel" src="src/icons.jsx"></script>
+  <script type="text/babel" src="src/primitives.jsx"></script>
+  <script type="text/babel" src="src/charts.jsx"></script>
+  <script type="text/babel" src="src/screens-auth.jsx"></script>
+  <script type="text/babel" src="src/screens-dashboard.jsx"></script>
+  <script type="text/babel" src="src/screens-portfolios.jsx"></script>
+  <script type="text/babel" src="src/screens-stock.jsx"></script>
+  <script type="text/babel" src="src/screens-discover.jsx"></script>
+  <script type="text/babel" src="src/screens-ai.jsx"></script>
+  <script type="text/babel" src="src/screens-analytics.jsx"></script>
+  <script type="text/babel" src="src/screens-settings.jsx"></script>
+  <script type="text/babel" src="src/shell.jsx"></script>
+  <script type="text/babel" src="src/app.jsx"></script>
+</body>
+</html>

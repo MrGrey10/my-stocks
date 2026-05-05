@@ -1,24 +1,221 @@
 @import 'tailwindcss';
 @import '@nuxt/ui';
 
-body {
-	background: #fcfafa;
-}
-
 :root {
-  --ui-primary: black;
-  --ui-secondary: var(--ui-color-secondary-500);
-  --ui-success: var(--ui-color-success-500);
-  --ui-info: var(--ui-color-info-500);
-  --ui-warning: var(--ui-color-warning-500);
-  --ui-error: var(--ui-color-error-500);
+  --bg: oklch(0.985 0.004 70);
+  --bg-elev: oklch(1 0 0);
+  --bg-sunken: oklch(0.965 0.005 70);
+  --bg-nav: oklch(0.985 0.004 70);
+
+  --ink: oklch(0.18 0.012 60);
+  --ink-2: oklch(0.42 0.012 60);
+  --ink-3: oklch(0.62 0.012 60);
+  --ink-4: oklch(0.78 0.008 60);
+
+  --line: oklch(0.92 0.005 70);
+  --line-2: oklch(0.88 0.006 70);
+
+  --accent: oklch(0.72 0.18 55);
+  --accent-deep: oklch(0.62 0.19 50);
+  --accent-soft: oklch(0.96 0.04 65);
+
+  --pos: oklch(0.62 0.14 150);
+  --pos-soft: oklch(0.95 0.05 150);
+  --neg: oklch(0.62 0.18 25);
+  --neg-soft: oklch(0.96 0.05 25);
+
+  --cool: oklch(0.55 0.10 240);
+  --cool-soft: oklch(0.95 0.025 240);
+
+  --r-sm: 8px;
+  --r: 12px;
+  --r-lg: 16px;
+  --r-xl: 22px;
+
+  --shadow-sm: 0 1px 2px rgba(20,18,15,.04);
+  --shadow: 0 1px 0 rgba(20,18,15,.03), 0 4px 12px rgba(20,18,15,.04);
+  --shadow-lg: 0 1px 0 rgba(20,18,15,.04), 0 12px 32px rgba(20,18,15,.06);
+
+  --font-sans: 'Geist', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
 }
 
-.container {
-	@apply mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8;
+* { box-sizing: border-box; }
+
+body {
+  font-family: var(--font-sans) !important;
+  background: var(--bg);
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  letter-spacing: -0.005em;
 }
 
-.gradient-background {
-	background: #cf3030;
-	background: linear-gradient(25deg,rgba(207, 48, 48, 0.75) 1%, rgba(253, 171, 29, 1) 51%, rgba(255, 201, 201, 1) 100%);
+button {
+  font-family: inherit;
+  font-size: inherit;
+  cursor: pointer;
+}
+
+input, textarea, select {
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+}
+
+.num, .mono {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+.pos { color: var(--pos); }
+.neg { color: var(--neg); }
+.muted { color: var(--ink-3); }
+
+::selection {
+  background: var(--accent-soft);
+  color: var(--ink);
+}
+
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-thumb {
+  background: oklch(0.88 0.005 70);
+  border-radius: 8px;
+  border: 2px solid var(--bg);
+}
+::-webkit-scrollbar-thumb:hover { background: oklch(0.78 0.005 70); }
+
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+.anim-in { animation: slide-up .35s ease both; }
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+
+/* ms- = MyStocks design system primitives */
+
+.ms-card {
+  background: var(--bg-elev);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.ms-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  height: 36px;
+  font-size: 13px;
+  font-weight: 500;
+  border-radius: 10px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: transform .12s ease, opacity .15s ease, filter .15s ease;
+  font-family: inherit;
+}
+
+.ms-btn:active { transform: scale(0.98); }
+
+.ms-btn-primary {
+  background: var(--ink);
+  color: oklch(0.98 0.005 70);
+  border: 1px solid var(--ink);
+}
+
+.ms-btn-ghost {
+  background: transparent;
+  color: var(--ink);
+  border: 1px solid var(--line-2);
+}
+
+.ms-btn-ghost:hover { background: var(--bg-sunken); }
+
+.ms-btn-sm {
+  height: 30px;
+  padding: 6px 10px;
+  font-size: 12px;
+  gap: 6px;
+}
+
+.ms-btn-lg {
+  height: 44px;
+  padding: 12px 18px;
+  font-size: 14px;
+  gap: 10px;
+}
+
+.ms-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 11.5px;
+  font-weight: 500;
+  padding: 3px 8px;
+  border-radius: 6px;
+}
+
+.ms-pill-pos { background: var(--pos-soft); color: var(--pos); }
+.ms-pill-neg { background: var(--neg-soft); color: var(--neg); }
+.ms-pill-neutral { background: var(--bg-sunken); color: var(--ink-2); border: 1px solid var(--line); }
+.ms-pill-accent { background: var(--accent-soft); color: var(--accent-deep); }
+
+.ms-input-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 12px;
+  height: 40px;
+  background: var(--bg-elev);
+  border: 1px solid var(--line-2);
+  border-radius: 10px;
+  transition: border-color .15s, box-shadow .15s;
+}
+
+.ms-input-wrap:focus-within {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+.ms-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 14px;
+  color: var(--ink);
+}
+
+.ms-section-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  gap: 16px;
+}
+
+.ms-section-title {
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.ms-symbol-badge {
+  display: grid;
+  place-items: center;
+  border-radius: 28%;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  flex-shrink: 0;
 }
